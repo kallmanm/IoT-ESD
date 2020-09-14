@@ -2,14 +2,29 @@
 
 
 class Sensor:
+    power = 'off'
+
     def __init__(self, config):
         self.config
 
+    def check_sensor_status(self):
+        return True
+
     def power_on(self):
-        pass
+        power = 'on'
+        print(f'The power is {power}')
+        # run functionality to turn on sensor if needed.
 
     def power_off(self):
-        pass
+        power = 'off'
+        print(f'The power is {power}')
+        # run functionality to turn off sensor if needed.
 
     def collect_data(self):
-        pass
+        try:
+            if self.check_sensor_status():
+                pass
+
+        except RuntimeError as e:
+            print(f'{e}')
+
