@@ -1,0 +1,17 @@
+---
+#  Configurations for SensorBridge setup(Raspberry Pi/ Linux)
+sensor-bridge:
+  port: '/dev/ttyUSB0'
+  baudrate: 460800
+  slave_address: 0
+#  Configurations parameters for Sensirion sensors
+sensors:
+  svm30:
+    name: 'svm30'
+    voltage: 5.0
+    frequency: 100e3
+  scd30:
+    name: 'scd30'
+    voltage: 5.0
+    frequency: 100e3
+...
