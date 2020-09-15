@@ -1,5 +1,14 @@
-# IMPORT Sensirion modules for sensor management
+import time
+import yaml
+from sensirion_shdlc_driver import ShdlcSerialPort, ShdlcConnection
+from sensirion_shdlc_sensorbridge import SensorBridgePort, \
+    SensorBridgeShdlcDevice, SensorBridgeI2cProxy
+from sensirion_i2c_driver import I2cConnection
+from sensirion_i2c_svm40 import Svm40I2cDevice
 
+#with open('sensors.yaml') as f:
+#    data = yaml.load(f, Loader=yaml.FullLoader)
+#    print(data)
 
 class Sensor:
     power = 'off'
@@ -27,4 +36,3 @@ class Sensor:
 
         except RuntimeError as e:
             print(f'{e}')
-
