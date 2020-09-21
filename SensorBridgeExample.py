@@ -2,22 +2,33 @@
 
 
 import time
+import yaml
 from sensirion_shdlc_driver import ShdlcSerialPort, ShdlcConnection
 from sensirion_shdlc_sensorbridge import SensorBridgePort, \
     SensorBridgeShdlcDevice, SensorBridgeI2cProxy
 from sensirion_i2c_driver import I2cConnection
 from sensirion_i2c_svm40 import Svm40I2cDevice
 
+with open('sensors.yaml') as f:
+    data = yaml.load(f, Loader=yaml.FullLoader)
+    sensor_bridge_spec = data["sensor-bridge"]
+    svm30_spec = data["sensors"]["svm30"]
+    scd30_spec = data["sensors"]["scd30"]
+
 # Connect to the SensorBridge with default settings:
 #  - baudrate:      460800
 #  - slave address: 0
-with ShdlcSerialPort(port='COM1', baudrate=460800) as port:
-    bridge = SensorBridgeShdlcDevice(ShdlcConnection(port), slave_address=0)
+with ShdlcSerialPort(port=sensor_bridge_spec["port"],
+                     baudrate=sensor_bridge_spec["baudrate"]) as port:
+    bridge = SensorBridgeShdlcDevice(ShdlcConnection(port),
+                                     slave_address=sensor_bridge_spec["slave_address"])
     print("SensorBridge SN: {}".format(bridge.get_serial_number()))
 
-    # Configure SensorBridge port 1 for SVM40
-    bridge.set_i2c_frequency(SensorBridgePort.ONE, frequency=100e3)
-    bridge.set_supply_voltage(SensorBridgePort.ONE, voltage=3.3)
+    # Configure SensorBridge port 1 for SVM40, in our case we are testing svm30.
+    bridge.set_i2c_frequency(SensorBridgePort.ONE,
+                             frequency=svm30_spec["frequency"])
+    bridge.set_supply_voltage(SensorBridgePort.ONE,
+                              voltage=svm30_spec["voltage"])
     bridge.switch_supply_on(SensorBridgePort.ONE)
 
     # Create SVM40 device
@@ -31,8 +42,10 @@ with ShdlcSerialPort(port='COM1', baudrate=460800) as port:
     # Start measurement
     device.start_measurement()
     print("Measurement started... ")
-    while True:
+    e = 1
+    while e < 4:
         time.sleep(10.)
         air_quality, humidity, temperature = device.read_measured_values()
         # use default formatting for printing output:
         print("{}, {}, {}".format(air_quality, humidity, temperature))
+        e += 1
