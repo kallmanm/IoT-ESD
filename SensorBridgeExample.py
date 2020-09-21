@@ -49,3 +49,4 @@ with ShdlcSerialPort(port=sensor_bridge_spec["port"],
         # use default formatting for printing output:
         print("{}, {}, {}".format(air_quality, humidity, temperature))
         e += 1
+    device.stop_measurement()
