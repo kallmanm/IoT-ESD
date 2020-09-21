@@ -8,7 +8,11 @@ from sensirion_i2c_svm40 import Svm40I2cDevice
 
 #with open('sensors.yaml') as f:
 #    data = yaml.load(f, Loader=yaml.FullLoader)
-#    print(data)
+#    sensor_bridge_spec = data["sensor-bridge"]
+#    svm30_spec = data["sensors"]["svm30"]
+#    scd30_spec = data["sensors"]["scd30"]
+#    print(svm30_spec)
+#    print(scd30_spec)
 
 class Sensor:
     power = 'off'
