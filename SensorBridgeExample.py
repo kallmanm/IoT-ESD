@@ -36,20 +36,20 @@ with ShdlcSerialPort(port=sensor_bridge_spec["port"],
     device = Svm40I2cDevice(I2cConnection(i2c_transceiver))
 
     # Print some device information
-    print("Version: {}".format(device.get_version()))
-    print("Serial Number: {}".format(device.get_serial_number()))
+    # print("Version: {}".format(device.get_version()))
+    # print("Serial Number: {}".format(device.get_serial_number()))
 
     # Start measurement
-    #device.start_measurement()
-    #print("Measurement started... ")
-    #e = 1
-    #while e < 4:
-    #    time.sleep(10.)
-    #    air_quality, humidity, temperature = device.read_measured_values()
-    #    # use default formatting for printing output:
-    #    print("{}, {}, {}".format(air_quality, humidity, temperature))
-    #    e += 1
-    #device.stop_measurement()
+    device.start_measurement()
+    print("Measurement started... ")
+    e = 1
+    while e < 4:
+        time.sleep(10.)
+        air_quality, humidity, temperature = device.read_measured_values()
+        # use default formatting for printing output:
+        print("{}, {}, {}".format(air_quality, humidity, temperature))
+        e += 1
+    device.stop_measurement()
     bridge.switch_supply_off(SensorBridgePort.TWO)
 
 exit()
