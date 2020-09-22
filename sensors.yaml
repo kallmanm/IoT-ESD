@@ -9,9 +9,9 @@ sensors:
   svm30:
     name: 'svm30'
     voltage: 5.0
-    frequency: 100e3
+    frequency: 100000
   scd30:
     name: 'scd30'
     voltage: 5.0
-    frequency: 100e3
+    frequency: 100000
 ...

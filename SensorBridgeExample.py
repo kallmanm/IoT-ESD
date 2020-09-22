@@ -25,28 +25,31 @@ with ShdlcSerialPort(port=sensor_bridge_spec["port"],
     print("SensorBridge SN: {}".format(bridge.get_serial_number()))
 
     # Configure SensorBridge port 1 for SVM40, in our case we are testing svm30.
-    bridge.set_i2c_frequency(SensorBridgePort.ONE,
+    bridge.set_i2c_frequency(SensorBridgePort.TWO,
                              frequency=svm30_spec["frequency"])
-    bridge.set_supply_voltage(SensorBridgePort.ONE,
+    bridge.set_supply_voltage(SensorBridgePort.TWO,
                               voltage=svm30_spec["voltage"])
-    bridge.switch_supply_on(SensorBridgePort.ONE)
+    bridge.switch_supply_on(SensorBridgePort.TWO)
 
     # Create SVM40 device
     i2c_transceiver = SensorBridgeI2cProxy(bridge, port=SensorBridgePort.ONE)
     device = Svm40I2cDevice(I2cConnection(i2c_transceiver))
 
     # Print some device information
-    print("Version: {}".format(device.get_version()))
-    print("Serial Number: {}".format(device.get_serial_number()))
+    # print("Version: {}".format(device.get_version()))
+    # print("Serial Number: {}".format(device.get_serial_number()))
 
     # Start measurement
-    device.start_measurement()
-    print("Measurement started... ")
-    e = 1
-    while e < 4:
-        time.sleep(10.)
-        air_quality, humidity, temperature = device.read_measured_values()
-        # use default formatting for printing output:
-        print("{}, {}, {}".format(air_quality, humidity, temperature))
-        e += 1
-    device.stop_measurement()
+    #device.start_measurement()
+    #print("Measurement started... ")
+    #e = 1
+    #while e < 4:
+    #    time.sleep(10.)
+    #    air_quality, humidity, temperature = device.read_measured_values()
+    #    # use default formatting for printing output:
+    #    print("{}, {}, {}".format(air_quality, humidity, temperature))
+    #    e += 1
+    #device.stop_measurement()
+    bridge.switch_supply_off(SensorBridgePort.TWO)
+
+exit()
