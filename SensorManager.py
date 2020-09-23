@@ -6,7 +6,8 @@ from sensirion_shdlc_sensorbridge import SensorBridgePort, \
 from sensirion_i2c_driver import I2cConnection
 from sensirion_i2c_svm40 import Svm40I2cDevice
 
-#with open('sensors.yaml') as f:
+
+# with open('sensors.yaml') as f:
 #    data = yaml.load(f, Loader=yaml.FullLoader)
 #    sensor_bridge_spec = data["sensor-bridge"]
 #    svm30_spec = data["sensors"]["svm30"]
@@ -14,29 +15,33 @@ from sensirion_i2c_svm40 import Svm40I2cDevice
 #    print(svm30_spec)
 #    print(scd30_spec)
 
+
 class Sensor:
-    power = 'off'
+    sensor_power = False
 
     def __init__(self, config):
-        self.config
+        self.config = config
 
     def check_sensor_status(self):
-        return True
+        if self.sensor_power:
+            return True
+        else:
+            return False
 
     def power_on(self):
-        power = 'on'
-        print(f'The power is {power}')
+        self.sensor_power = True
+        print(f'The power is {self.sensor_power}')
         # run functionality to turn on sensor if needed.
 
     def power_off(self):
-        power = 'off'
-        print(f'The power is {power}')
+        self.sensor_power = False
+        print(f'The power is {self.sensor_power}')
         # run functionality to turn off sensor if needed.
 
     def collect_data(self):
         try:
             if self.check_sensor_status():
-                pass
+                print('random data atm')
 
         except RuntimeError as e:
             print(f'{e}')
