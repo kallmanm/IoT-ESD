@@ -9,7 +9,7 @@ from sensirion_shdlc_sensorbridge import SensorBridgePort, \
 from sensirion_i2c_driver import I2cConnection
 from sensirion_i2c_svm40 import Svm40I2cDevice
 
-with open('sensors.yaml') as f:
+with open('config_files/sensors.yaml') as f:
     data = yaml.load(f, Loader=yaml.FullLoader)
     sensor_bridge_spec = data["sensor-bridge"]
     svm30_spec = data["sensors"]["svm30"]
