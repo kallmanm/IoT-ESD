@@ -16,7 +16,7 @@ from sensirion_i2c_svm40 import Svm40I2cDevice
 #    print(scd30_spec)
 
 
-class Sensor:
+class SensorManager:
     sensor_power = False
 
     def __init__(self, config):
