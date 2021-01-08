@@ -20,7 +20,7 @@ class Sps30:
 
     def byte_unstuffing(self, data):
         """
-            Datasheet 5.2 Table 5 for details on byte-stuffing.
+        Datasheet 5.2 Table 5 for details on byte-stuffing.
         """
         print(f'Pre byte-unstuffing:{data}')
         if b'\x7D\x5E' in data:
@@ -36,30 +36,40 @@ class Sps30:
 
     def rx_data(self, data):
         """
-            Datasheet 5.2 Figure 4 MISO Frame.
-            Return only RX data.
+        Datasheet 5.2 Figure 4 MISO Frame.
+        Return only RX data.
         """
         return data[5:-2]
 
     def start_measurement(self):
+        """
+        Datasheet 5.3.1
+        """
         self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
         time.sleep(30)  # Minimum time needed to boot up the sensor.
 
     def stop_measurement(self):
+        """
+        Datasheet 5.3.2
+        """
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
 
     def read_measured_values(self):
+        """
+        Datasheet 5.3.2
+        """
         self.ser.flush.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
         data_to_read = self.ser.in_waiting()
-        while data_to_read < 47:
+        while data_to_read < 47:  # The MISO response frame for read_measured_values is 47 long.
             data_to_read = self.ser.in_waiting()
             time.sleep(0.1)
+        # TODO: make check for empty response frame.
         raw_data = self.ser.read(data_to_read)
 
-        raw_data = self.byte_unstuffing(raw_data)  # Unstuff the raw_data.
-        byte_data = self.rx_data(raw_data)  # Fetch rx_data from  byte_data.
+        raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        byte_data = self.rx_data(raw_data)  # Fetching rx_data from byte_data.
 
         try:
             data = struct.unpack(">ffffffffff", byte_data)  # format = big-endian 10 floats
