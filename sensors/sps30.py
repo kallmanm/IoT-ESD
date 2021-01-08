@@ -8,11 +8,12 @@
 import serial, struct, time
 
 
-
+# TODO: remove print()s when dev done
 class Sps30:
     """
     Datasheet 5.0: UART Interface settings.
     """
+
     def __init__(self, port):
         self.port = port
         self.ser = serial.Serial(self.port,
@@ -77,6 +78,7 @@ class Sps30:
 
         try:
             data = struct.unpack(">ffffffffff", byte_data)  # format = big-endian 10 floats
+        # TODO: improve error handling
         except struct.error:
             data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         return data
@@ -128,4 +130,3 @@ class Sps30:
         Datasheet 5.3.11
         """
         pass
-
