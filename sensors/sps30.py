@@ -131,6 +131,17 @@ class Sps30:
         """
         pass
 
+    def open_port(self):
+        """
+        Opens a port connection.
+        """
+        self.ser = serial.Serial(self.port,
+                                 baudrate=115200,
+                                 bytesize=serial.EIGHTBITS,
+                                 stopbits=serial.STOPBITS_ONE,  # This is default class value
+                                 parity=serial.PARITY_NONE,  # This is default class value
+                                 timeout=2)  # Set at 2 seconds
+
     def close_port(self):
         """
         Closes the port connection immediately.
