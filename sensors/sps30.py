@@ -130,3 +130,9 @@ class Sps30:
         Datasheet 5.3.11
         """
         pass
+
+    def close_port(self):
+        """
+        Closes the port connection immediately.
+        """
+        self.ser.close()
