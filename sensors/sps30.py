@@ -81,3 +81,51 @@ class Sps30:
             data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         return data
 
+    def sleep(self):
+        """
+        Datasheet 5.3.4
+        """
+        pass
+
+    def wake_up(self):
+        """
+        Datasheet 5.3.5
+        """
+        pass
+
+    def start_fan_cleaning(self):
+        """
+        Datasheet 5.3.6
+        """
+        pass
+
+    def read_write_auto_cleaning_interval(self):
+        """
+        Datasheet 5.3.7
+        """
+        pass
+
+    def device_information(self):
+        """
+        Datasheet 5.3.8
+        """
+        pass
+
+    def read_version(self):
+        """
+        Datasheet 5.3.9
+        """
+        pass
+
+    def read_device_status_register(self):
+        """
+        Datasheet 5.3.10
+        """
+        pass
+
+    def device_reset(self):
+        """
+        Datasheet 5.3.11
+        """
+        pass
+
