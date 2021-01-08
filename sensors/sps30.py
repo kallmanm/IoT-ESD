@@ -8,19 +8,23 @@
 import serial, struct, time
 
 
-#  TODO: Check configs for sensor
+
 class Sps30:
+    """
+    Datasheet 5.0: UART Interface settings.
+    """
     def __init__(self, port):
         self.port = port
         self.ser = serial.Serial(self.port,
                                  baudrate=115200,
+                                 bytesize=serial.EIGHTBITS,
                                  stopbits=serial.STOPBITS_ONE,  # This is default class value
                                  parity=serial.PARITY_NONE,  # This is default class value
                                  timeout=2)  # Set at 2 seconds
 
     def byte_unstuffing(self, data):
         """
-        Datasheet 5.2 Table 5 for details on byte-stuffing.
+        Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
         print(f'Pre byte-unstuffing:{data}')
         if b'\x7D\x5E' in data:
@@ -36,7 +40,7 @@ class Sps30:
 
     def rx_data(self, data):
         """
-        Datasheet 5.2 Figure 4 MISO Frame.
+        Datasheet 5.2: Figure 4 MISO Frame.
         Return only RX data.
         """
         return data[5:-2]
@@ -61,12 +65,11 @@ class Sps30:
         self.ser.flush.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
-        loading = True
-        while loading:
+        while True:
             data_to_read = self.ser.in_waiting()
+            if data_to_read < 47:  # The MISO response frame for read_measured_values should be 47 long.
+                break
             time.sleep(0.1)
-            if data_to_read < 47:  # The MISO response frame for read_measured_values is 47 long.
-                loading = False
         raw_data = self.ser.read(data_to_read)
 
         unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
