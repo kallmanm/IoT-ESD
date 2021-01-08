@@ -56,20 +56,21 @@ class Sps30:
 
     def read_measured_values(self):
         """
-        Datasheet 5.3.2
+        Datasheet 5.3.3
         """
         self.ser.flush.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
-        data_to_read = self.ser.in_waiting()
-        while data_to_read < 47:  # The MISO response frame for read_measured_values is 47 long.
+        loading = True
+        while loading:
             data_to_read = self.ser.in_waiting()
             time.sleep(0.1)
-        # TODO: make check for empty response frame.
+            if data_to_read < 47:  # The MISO response frame for read_measured_values is 47 long.
+                loading = False
         raw_data = self.ser.read(data_to_read)
 
-        raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
-        byte_data = self.rx_data(raw_data)  # Fetching rx_data from byte_data.
+        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        byte_data = self.rx_data(unstuffed_raw_data)  # Fetching rx_data from byte_data.
 
         try:
             data = struct.unpack(">ffffffffff", byte_data)  # format = big-endian 10 floats
