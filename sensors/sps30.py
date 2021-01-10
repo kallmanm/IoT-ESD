@@ -11,6 +11,7 @@ import serial, struct, time
 # TODO: remove print()s when dev done
 class Sps30:
     """
+    Initializing to default sps30 settings.
     Datasheet 5.0: UART Interface settings.
     """
 
@@ -68,7 +69,8 @@ class Sps30:
 
         while True:
             data_to_read = self.ser.in_waiting()
-            if data_to_read < 47:  # The MISO response frame for read_measured_values should be 47 long.
+            print(f'data_to_read value at: {data_to_read}')
+            if data_to_read >= 47:  # The MISO response frame for read_measured_values should be 47 long.
                 break
             time.sleep(0.1)
         raw_data = self.ser.read(data_to_read)
