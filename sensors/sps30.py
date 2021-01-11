@@ -65,17 +65,23 @@ class Sps30:
         """
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
 
-    def read_measured_values(self):
+    def read_measured_values(self, mode='float'):
         """
         Datasheet 5.3.3
         """
+
+        if mode == 'integer':
+            stop_value = 27
+        else:
+            stop_value = 47
+
         self.ser.flush.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
         while True:
             data_to_read = self.ser.in_waiting()
             print(f'data_to_read value at: {data_to_read}')
-            if data_to_read >= 47:  # The MISO response frame for read_measured_values should be 47 long.
+            if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 47 long.
                 break
             time.sleep(0.1)
         raw_data = self.ser.read(data_to_read)
@@ -84,11 +90,19 @@ class Sps30:
         # Datasheet 5.2: Figure 4 MISO Frame.
         data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
 
-        try:
-            data = struct.unpack(">ffffffffff", data)  # format = big-endian 10 floats
-        # TODO: improve error handling
-        except struct.error:
-            data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        if mode == 'integer':
+            try:
+                data = struct.unpack(">iiiiiiiiii", data)  # format = big-endian 10 integers
+            # TODO: improve error handling
+            except struct.error:
+                data = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        else:
+            try:
+                data = struct.unpack(">ffffffffff", data)  # format = big-endian 10 floats
+            # TODO: improve error handling
+            except struct.error:
+                data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
         return data
 
     def sleep(self):
