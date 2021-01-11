@@ -87,18 +87,20 @@ class Sps30:
         raw_data = self.ser.read(data_to_read)
 
         unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        error_flag = unstuffed_raw_data[3]
+        print(f'error-flag: {error_flag}')
         # Datasheet 5.2: Figure 4 MISO Frame.
-        data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
 
         if mode == 'integer':
             try:
-                data = struct.unpack(">iiiiiiiiii", data)  # format = big-endian 10 integers
+                data = struct.unpack(">iiiiiiiiii", rx_data)  # format = big-endian 10 integers
             # TODO: improve error handling
             except struct.error:
                 data = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         else:
             try:
-                data = struct.unpack(">ffffffffff", data)  # format = big-endian 10 floats
+                data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
             # TODO: improve error handling
             except struct.error:
                 data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
