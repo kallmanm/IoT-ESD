@@ -11,6 +11,8 @@ import argparse
 device_port = "/dev/ttyUSB0"
 
 sensor_sps30 = sps30.Sps30(device_port)
-sensor_sps30.start()
-sensor_sps30.read()
-sensor_sps30.stop()
+sensor_sps30.start_measurement()
+data_readout = sensor_sps30.read_measured_values()
+print(f'{data_readout}')
+sensor_sps30.stop_measurement()
+exit()
