@@ -141,13 +141,15 @@ class Sps30:
         """
         Datasheet 5.3.9
         """
-        pass
+        self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
+        # TODO: add self.ser.read() functionality to read response.
 
     def read_device_status_register(self):
         """
         Datasheet 5.3.10
         """
-        pass
+        self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
+        # TODO: add self.ser.read() functionality to read response.
 
     def device_reset(self):
         """
