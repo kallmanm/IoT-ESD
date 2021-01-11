@@ -40,11 +40,16 @@ class Sps30:
         print(f'Post byte-unstuffing:{data}')
         return data
 
-
     def start_measurement(self):
         """
         Datasheet 5.3.1
+        Measurement Output Format:
+        0x03: Big-endian IEEE754 float values
+        0x05: Big-endian unsigned 16-bit integer values
+        Function set to Big-endian IEEE754 float values.
         """
+        mof_float = 0x03
+        mof_int = 0x05
         self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
         time.sleep(30)  # Minimum time needed to boot up the sensor.
 
