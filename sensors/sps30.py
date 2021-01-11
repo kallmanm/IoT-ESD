@@ -5,7 +5,9 @@
     https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.6_Particulate_Matter/Datasheets/Sensirion_PM_Sensors_SPS30_Datasheet.pdf
 """
 
-import serial, struct, time
+import serial
+import struct
+import time
 
 
 # TODO: remove print()s when dev done
@@ -40,7 +42,7 @@ class Sps30:
         print(f'Post byte-unstuffing:{data}')
         return data
 
-    def start_measurement(self):
+    def start_measurement(self, mode='float'):
         """
         Datasheet 5.3.1
         Measurement Output Format:
@@ -48,9 +50,13 @@ class Sps30:
         0x05: Big-endian unsigned 16-bit integer values
         Function set to Big-endian IEEE754 float values.
         """
-        mof_float = 0x03
-        mof_int = 0x05
-        self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
+        if mode == 'float':
+            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
+        elif mode == 'integer':
+            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x05, 0xF7, 0x7E])
+        else:
+            print('invalid mode input, defaulting to float.')
+            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
         time.sleep(30)  # Minimum time needed to boot up the sensor.
 
     def stop_measurement(self):
