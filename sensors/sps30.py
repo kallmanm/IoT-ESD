@@ -111,19 +111,22 @@ class Sps30:
         """
         Datasheet 5.3.4
         """
-        pass
+        self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
+        # TODO: add self.ser.read() functionality to read response.
 
     def wake_up(self):
         """
         Datasheet 5.3.5
         """
-        pass
+        self.ser.write([0xFF])
+        self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
+        # TODO: add self.ser.read() functionality to read response.
 
     def start_fan_cleaning(self):
         """
         Datasheet 5.3.6
         """
-        pass
+        self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
     def read_write_auto_cleaning_interval(self):
         """
@@ -135,7 +138,10 @@ class Sps30:
         """
         Datasheet 5.3.8
         """
-        pass
+        prod_type = 0x00
+        ser_num = 0x03
+        self.ser.write([0x7E, 0x00, 0xD0, 0x01, 0x00, 0x2E, 0x7E])
+        # TODO: add self.ser.read() functionality to read response.
 
     def read_version(self):
         """
