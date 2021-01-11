@@ -153,7 +153,7 @@ class Sps30:
         """
         Datasheet 5.3.11
         """
-        pass
+        self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
     def open_port(self):
         """
