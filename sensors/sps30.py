@@ -40,12 +40,6 @@ class Sps30:
         print(f'Post byte-unstuffing:{data}')
         return data
 
-    def rx_data(self, data):
-        """
-        Datasheet 5.2: Figure 4 MISO Frame.
-        Return only RX data.
-        """
-        return data[5:-2]
 
     def start_measurement(self):
         """
@@ -76,10 +70,11 @@ class Sps30:
         raw_data = self.ser.read(data_to_read)
 
         unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
-        byte_data = self.rx_data(unstuffed_raw_data)  # Fetching rx_data from byte_data.
+        # Datasheet 5.2: Figure 4 MISO Frame.
+        data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
 
         try:
-            data = struct.unpack(">ffffffffff", byte_data)  # format = big-endian 10 floats
+            data = struct.unpack(">ffffffffff", data)  # format = big-endian 10 floats
         # TODO: improve error handling
         except struct.error:
             data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
