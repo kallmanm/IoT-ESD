@@ -10,10 +10,35 @@ import argparse
 #    print(scd30_spec)
 device_port = "/dev/ttyUSB0"
 
-sensor_sps30 = sps30.Sps30(device_port)
-sensor_sps30.start_measurement()
-data_readout = sensor_sps30.read_measured_values()
-print(f'{data_readout}')
-sensor_sps30.stop_measurement()
-sensor_sps30.close_port()
-exit()
+
+class SensorManager:
+    def __init__(self, sensor_info, sensors, actions):
+        self.sensor_info = sensor_info
+        self.activate_sensors(sensors)
+        self.actions = actions
+
+    def activate_sensors(self, sensor_list):
+        # activate sensor classes
+        if 'sps30' in sensor_list:
+            sensor_sps30 = sps30.Sps30(self.sensor_info)
+        if 'scd30' in sensor_list:
+            # sensor_scd30
+            pass
+        if 'sps30' in sensor_list:
+            # sensor_svm30
+            pass
+
+    def process_actions(self, action_list):
+        for action in action_list:
+            # do actions
+            pass
+        pass
+
+
+# sensor_sps30 = sps30.Sps30(device_port)
+# sensor_sps30.start_measurement()
+# data_readout = sensor_sps30.read_measured_values()
+# print(f'{data_readout}')
+# sensor_sps30.stop_measurement()
+# sensor_sps30.close_port()
+# exit()
