@@ -132,7 +132,11 @@ class Sps30:
         """
         Datasheet 5.3.7
         """
-        pass
+        # Read Auto Cleaning Interval:
+        self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
+        # Write Auto Cleaning Interval to 0 (disable):
+        # Disabled, use with caution.
+        # self.ser.write([0x7E, 0x00, 0x80, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x7E])
 
     def device_information(self):
         """
