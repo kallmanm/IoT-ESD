@@ -17,7 +17,7 @@ class Sps30:
     Datasheet 5.0: UART Interface settings.
     """
 
-    def __init__(self, port):
+    def __init__(self, port, debug=False):
         self.port = port
         self.ser = serial.Serial(self.port,
                                  baudrate=115200,
@@ -25,6 +25,7 @@ class Sps30:
                                  stopbits=serial.STOPBITS_ONE,  # This is default class value
                                  parity=serial.PARITY_NONE,  # This is default class value
                                  timeout=2)  # Set at 2 seconds
+        self.debug = debug
 
     def byte_unstuffing(self, data):
         """
@@ -57,6 +58,11 @@ class Sps30:
         else:
             print('invalid mode input, defaulting to float.')
             self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
+        if self.debug:
+            raw_response = self.ser.read(7)
+            response = self.byte_unstuffing(raw_response)
+            print(f'Response Status: {response[3]}')
+            # use struct to unpack if not readable
         time.sleep(30)  # Minimum time needed to boot up the sensor.
 
     def stop_measurement(self):
@@ -64,6 +70,11 @@ class Sps30:
         Datasheet 5.3.2
         """
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
+        if self.debug:
+            raw_response = self.ser.read(7)
+            response = self.byte_unstuffing(raw_response)
+            print(f'Response Status: {response[3]}')
+            # use struct to unpack if not readable
 
     def read_measured_values(self, mode='float'):
         """
@@ -81,7 +92,7 @@ class Sps30:
         while True:
             data_to_read = self.ser.in_waiting()
             print(f'data_to_read value at: {data_to_read}')
-            if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 47 long.
+            if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 27 or 47 long.
                 break
             time.sleep(0.1)
         raw_data = self.ser.read(data_to_read)

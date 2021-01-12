@@ -6,7 +6,7 @@ from ..sensors import sps30
 device_port = "/dev/ttyUSB0"
 
 # 1. Tests __init__()
-sensor_sps30 = sps30.Sps30(device_port)
+sensor_sps30 = sps30.Sps30(device_port, debug=True)
 print(f'Sps30 activated: {sensor_sps30.ser.is_open}')
 
 # 2. Tests start_measurement()
