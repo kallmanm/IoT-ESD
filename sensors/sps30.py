@@ -1,8 +1,10 @@
 """
-    Python class for control of the Sensirion SPS30 Particulate Matter Sensor.
+    A python class for control of the Sensirion SPS30 Particulate Matter Sensor.
     The Sps30 class below uses the UART Interface to control the sensor's functionality.
-    See datasheet for detailed explanation of sensor:
-    https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.6_Particulate_Matter/Datasheets/Sensirion_PM_Sensors_SPS30_Datasheet.pdf
+
+    Datasheet: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.6_Particulate_Matter/Datasheets/Sensirion_PM_Sensors_SPS30_Datasheet.pdf
+
+    All 'Datasheet x.x' references in methods refers to the specific sections in above referenced datasheet.
 """
 
 import serial
