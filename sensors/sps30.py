@@ -43,7 +43,7 @@ class Sps30:
         print(f'Post byte-unstuffing:{data}')
         return data
 
-    def start_measurement(self, mode='float'):
+    def start_measurement(self, mode='float', start_up_time=30):
         """
         Datasheet 5.3.1
         Measurement Output Format:
@@ -63,7 +63,7 @@ class Sps30:
             response = self.byte_unstuffing(raw_response)
             print(f'Response Status start_measurement(): {response[3]}')
             # use struct to unpack if not readable
-        time.sleep(30)  # Minimum time needed to boot up the sensor.
+        time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
 
     def stop_measurement(self):
         """
