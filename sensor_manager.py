@@ -12,28 +12,16 @@ device_port = "/dev/ttyUSB0"
 
 
 class SensorManager:
-    def __init__(self, config, sensors_list, action_list):
-        self.config = config
+    def __init__(self, sensors_list, action_list):
         if 'sps30' in sensors_list:
-            self.sensor_sps30 = sps30.Sps30(self.config)
+            # TODO: add try/except to sensor initiation.
+            self.sensor_sps30 = sps30.Sps30(sensors_list['sps30'])
         self.action_list = action_list
-        self.process_actions(self.action_list)
         self.listen()
-
-    def process_actions(self, action_list):
-        for action in action_list:
-            # do actions
-            pass
-        pass
 
     def listen(self):
         # do actions if activated
+        # Maybe use Python IPC
+        # https://docs.python.org/3.7/library/ipc.html
         pass
 
-# sensor_sps30 = sps30.Sps30(device_port)
-# sensor_sps30.start_measurement()
-# data_readout = sensor_sps30.read_measured_values()
-# print(f'{data_readout}')
-# sensor_sps30.stop_measurement()
-# sensor_sps30.close_port()
-# exit()
