@@ -12,21 +12,13 @@ device_port = "/dev/ttyUSB0"
 
 
 class SensorManager:
-    def __init__(self, sensor_info, sensors, actions):
-        self.sensor_info = sensor_info
-        self.activate_sensors(sensors)
-        self.actions = actions
-
-    def activate_sensors(self, sensor_list):
-        # activate sensor classes
-        if 'sps30' in sensor_list:
-            sensor_sps30 = sps30.Sps30(self.sensor_info)
-        if 'scd30' in sensor_list:
-            # sensor_scd30
-            pass
-        if 'sps30' in sensor_list:
-            # sensor_svm30
-            pass
+    def __init__(self, config, sensors_list, action_list):
+        self.config = config
+        if 'sps30' in sensors_list:
+            self.sensor_sps30 = sps30.Sps30(self.config)
+        self.action_list = action_list
+        self.process_actions(self.action_list)
+        self.listen()
 
     def process_actions(self, action_list):
         for action in action_list:
@@ -34,6 +26,9 @@ class SensorManager:
             pass
         pass
 
+    def listen(self):
+        # do actions if activated
+        pass
 
 # sensor_sps30 = sps30.Sps30(device_port)
 # sensor_sps30.start_measurement()
