@@ -29,7 +29,8 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
         self.debug = debug
 
-    def byte_unstuffing(self, data):
+    @staticmethod
+    def byte_unstuffing(data):
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
@@ -44,6 +45,30 @@ class Sps30:
             data = data.replace(b'\x7D\x33', b'\x13')
         print(f'Post byte-unstuffing:{data}')
         return data
+
+    @staticmethod
+    def error_msg_check(byte):
+        """
+        Datasheet 5.2: Table 6 Error Codes.
+        :param byte: byte
+        :return error_msg:
+        """
+        error_msg = ""
+        if b'\x00' in byte:
+            error_msg = 'No error'
+        if b'\x01' in byte:
+            error_msg = 'Wrong data length for this command (too much or little data)'
+        if b'\x02' in byte:
+            error_msg = 'Unknown command'
+        if b'\x03' in byte:
+            error_msg = 'No access right for command'
+        if b'\x04' in byte:
+            error_msg = 'Illegal command parameter or parameter out of allowed range'
+        if b'\x28' in byte:
+            error_msg = 'Internal function argument out of range'
+        if b'\x43' in byte:
+            error_msg = 'Command not allowed in current state'
+        return error_msg
 
     def start_measurement(self, mode='float', start_up_time=30):
         """
@@ -63,7 +88,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status start_measurement(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status start_measurement(): {error_msg}')
             # use struct to unpack if not readable
         time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
 
@@ -75,7 +101,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status stop_measurement(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status stop_measurement(): {error_msg}')
             # use struct to unpack if not readable
 
     def read_measured_values(self, mode='float'):
@@ -103,7 +130,8 @@ class Sps30:
 
         if self.debug:
             error_flag = unstuffed_raw_data[3]
-            print(f'Response Status read_measured_values(): {error_flag}')
+            error_msg = self.error_msg_check(error_flag)
+            print(f'Response Status read_measured_values(): {error_msg}')
 
         # Datasheet 5.2: Figure 4 MISO Frame.
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
@@ -133,7 +161,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status sleep(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status sleep(): {error_msg}')
             # use struct to unpack if not readable
 
     def wake_up(self):
@@ -147,7 +176,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status wake_up(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status wake_up(): {error_msg}')
             # use struct to unpack if not readable
 
     def start_fan_cleaning(self):
@@ -160,7 +190,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status start_fan_cleaning(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status start_fan_cleaning(): {error_msg}')
             # use struct to unpack if not readable
 
     def read_write_auto_cleaning_interval(self):
@@ -204,7 +235,8 @@ class Sps30:
 
         if self.debug:
             error_flag = unstuffed_raw_data[3]
-            print(f'Response Status device_information(): {error_flag}')
+            error_msg = self.error_msg_check(error_flag)
+            print(f'Response Status device_information(): {error_msg}')
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
         data = rx_data.decode('ascii')
@@ -230,7 +262,8 @@ class Sps30:
 
         if self.debug:
             error_flag = unstuffed_raw_data[3]
-            print(f'Response Status device_information(): {error_flag}')
+            error_msg = self.error_msg_check(error_flag)
+            print(f'Response Status device_information(): {error_msg}')
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
         try:
@@ -259,7 +292,8 @@ class Sps30:
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
-            print(f'Response Status device_reset(): {response[3]}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'Response Status device_reset(): {error_msg}')
             # use struct to unpack if not readable
 
     def open_port(self):
