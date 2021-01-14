@@ -192,11 +192,10 @@ class Sps30:
 
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
-        # TODO: add self.ser.read() functionality to read response.
-        # TODO: add self.debug check to confirm error status flag
+
         while True:
             data_to_read = self.ser.in_waiting()
-            if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 27 or 47 long.
+            if data_to_read >= stop_value:
                 break
             time.sleep(0.1)
         raw_data = self.ser.read(data_to_read)
@@ -216,10 +215,30 @@ class Sps30:
         """
         Datasheet 5.3.9
         """
+        stop_value = 14
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
-        # TODO: add self.ser.read() functionality to read response.
-        # TODO: add self.debug check to confirm error status flag
+
+        while True:
+            data_to_read = self.ser.in_waiting()
+            if data_to_read >= stop_value:
+                break
+            time.sleep(0.1)
+        raw_data = self.ser.read(data_to_read)
+
+        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+
+        if self.debug:
+            error_flag = unstuffed_raw_data[3]
+            print(f'Response Status device_information(): {error_flag}')
+
+        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        try:
+            data = struct.unpack(">bbbbbbb", rx_data)  # format = big-endian 7  uint8 integers
+        except struct.error:
+            data = "error in read_version fetch."
+
+        return data
 
     def read_device_status_register(self):
         """
