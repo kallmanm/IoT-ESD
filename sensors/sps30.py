@@ -127,6 +127,7 @@ class Sps30:
         """
         Datasheet 5.3.4
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
 
         if self.debug:
@@ -139,6 +140,7 @@ class Sps30:
         """
         Datasheet 5.3.5
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0xFF])
         self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
 
@@ -152,6 +154,7 @@ class Sps30:
         """
         Datasheet 5.3.6
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
         if self.debug:
@@ -164,26 +167,56 @@ class Sps30:
         """
         Datasheet 5.3.7
         """
+        self.ser.flush.reset_input_buffer()
         # Read Auto Cleaning Interval:
         self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
         # Write Auto Cleaning Interval to 0 (disable):
         # Disabled, use with caution.
         # self.ser.write([0x7E, 0x00, 0x80, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x7E])
 
-    def device_information(self):
+    def device_information(self, type='product_type'):
         """
         Datasheet 5.3.8
+        response info:
+            Requested Device Information as null-terminated ASCII string.
+            The size of the string is limited to 32 ASCII characters (including null character).
         """
-        prod_type = 0x00
-        ser_num = 0x03
-        self.ser.write([0x7E, 0x00, 0xD0, 0x01, 0x00, 0x2E, 0x7E])
+        # default set to product_type
+        cmd = 0x00
+        check = 0x2E
+        stop_value = 16
+        if type == 'serial_number':
+            cmd = 0x03
+            check = 0x2B
+            stop_value = 28
+
+        self.ser.flush.reset_input_buffer()
+        self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
         # TODO: add self.debug check to confirm error status flag
+        while True:
+            data_to_read = self.ser.in_waiting()
+            if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 27 or 47 long.
+                break
+            time.sleep(0.1)
+        raw_data = self.ser.read(data_to_read)
+
+        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+
+        if self.debug:
+            error_flag = unstuffed_raw_data[3]
+            print(f'Response Status device_information(): {error_flag}')
+
+        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        data = rx_data.decode('ascii')
+
+        return data
 
     def read_version(self):
         """
         Datasheet 5.3.9
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
         # TODO: add self.debug check to confirm error status flag
@@ -192,6 +225,7 @@ class Sps30:
         """
         Datasheet 5.3.10
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
         # TODO: add self.debug check to confirm error status flag
@@ -200,6 +234,7 @@ class Sps30:
         """
         Datasheet 5.3.11
         """
+        self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
         if self.debug:
