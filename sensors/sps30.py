@@ -2,7 +2,7 @@
     A python class for control of the Sensirion SPS30 Particulate Matter Sensor.
     The Sps30 class below uses the UART Interface to control the sensor's functionality.
 
-    Datasheet: https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.6_Particulate_Matter/Datasheets/Sensirion_PM_Sensors_SPS30_Datasheet.pdf
+    Datasheet: <add link to datasheet>
 
     All 'Datasheet x.x' references in methods refers to the specific sections in above referenced datasheet.
 """
@@ -12,7 +12,6 @@ import struct
 import time
 
 
-# TODO: remove print()s when dev done
 class Sps30:
     """
     Initializing to default sps30 settings.
@@ -34,6 +33,7 @@ class Sps30:
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
+
         print(f'Pre byte-unstuffing:{data}')
         if b'\x7D\x5E' in data:
             data = data.replace(b'\x7D\x5E', b'\x7E')
@@ -53,6 +53,7 @@ class Sps30:
         :param byte: byte
         :return error_msg:
         """
+
         error_msg = ""
         if b'\x00' in byte:
             error_msg = 'No error'
@@ -76,34 +77,36 @@ class Sps30:
         Measurement Output Format:
         0x03: Big-endian IEEE754 float values
         0x05: Big-endian unsigned 16-bit integer values
-        Function set to Big-endian IEEE754 float values.
+        Function default set to Big-endian IEEE754 float values.
         """
-        if mode == 'float':
-            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
-        elif mode == 'integer':
-            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x05, 0xF7, 0x7E])
-        else:
-            print('invalid mode input, defaulting to float.')
-            self.ser.write([0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E])
+
+        # mode = float cmd
+        cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E]
+        if mode == 'integer':
+            cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x05, 0xF7, 0x7E]
+
+        self.ser.write(cmd)
+
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status start_measurement(): {error_msg}')
-            # use struct to unpack if not readable
+
         time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
 
     def stop_measurement(self):
         """
         Datasheet 5.3.2
         """
+
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
+
         if self.debug:
             raw_response = self.ser.read(7)
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status stop_measurement(): {error_msg}')
-            # use struct to unpack if not readable
 
     def read_measured_values(self, mode='float'):
         """
@@ -155,6 +158,7 @@ class Sps30:
         """
         Datasheet 5.3.4
         """
+
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
 
@@ -163,12 +167,12 @@ class Sps30:
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status sleep(): {error_msg}')
-            # use struct to unpack if not readable
 
     def wake_up(self):
         """
         Datasheet 5.3.5
         """
+
         self.ser.flush.reset_input_buffer()
         self.ser.write([0xFF])
         self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
@@ -178,12 +182,12 @@ class Sps30:
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status wake_up(): {error_msg}')
-            # use struct to unpack if not readable
 
     def start_fan_cleaning(self):
         """
         Datasheet 5.3.6
         """
+
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
@@ -192,12 +196,13 @@ class Sps30:
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status start_fan_cleaning(): {error_msg}')
-            # use struct to unpack if not readable
 
     def read_write_auto_cleaning_interval(self):
         """
         Datasheet 5.3.7
         """
+
+        # TODO: Review code and method
         self.ser.flush.reset_input_buffer()
         # Read Auto Cleaning Interval:
         self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
@@ -212,6 +217,7 @@ class Sps30:
             Requested Device Information as null-terminated ASCII string.
             The size of the string is limited to 32 ASCII characters (including null character).
         """
+
         # default set to product_type
         cmd = 0x00
         check = 0x2E
@@ -239,6 +245,7 @@ class Sps30:
             print(f'Response Status device_information(): {error_msg}')
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+
         data = rx_data.decode('ascii')
 
         return data
@@ -247,6 +254,7 @@ class Sps30:
         """
         Datasheet 5.3.9
         """
+
         stop_value = 14
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
@@ -266,6 +274,7 @@ class Sps30:
             print(f'Response Status device_information(): {error_msg}')
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+
         try:
             data = struct.unpack(">bbbbbbb", rx_data)  # format = big-endian 7  uint8 integers
         except struct.error:
@@ -277,6 +286,7 @@ class Sps30:
         """
         Datasheet 5.3.10
         """
+
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
@@ -286,6 +296,7 @@ class Sps30:
         """
         Datasheet 5.3.11
         """
+
         self.ser.flush.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
@@ -294,12 +305,12 @@ class Sps30:
             response = self.byte_unstuffing(raw_response)
             error_msg = self.error_msg_check(response[3])
             print(f'Response Status device_reset(): {error_msg}')
-            # use struct to unpack if not readable
 
     def open_port(self):
         """
         Opens a port connection.
         """
+
         self.ser = serial.Serial(self.port,
                                  baudrate=115200,
                                  bytesize=serial.EIGHTBITS,
@@ -311,4 +322,5 @@ class Sps30:
         """
         Closes the port connection immediately.
         """
+
         self.ser.close()
