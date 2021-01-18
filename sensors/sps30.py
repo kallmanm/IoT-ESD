@@ -128,7 +128,6 @@ class Sps30:
 
         while True:
             data_to_read = self.ser.in_waiting()
-            print(f'data_to_read value at: {data_to_read}')
             if data_to_read >= stop_value:  # The MISO response frame for read_measured_values should be 27 or 47 long.
                 break
             time.sleep(0.1)
