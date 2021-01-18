@@ -235,12 +235,13 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
 
-        while True:
-            data_to_read = self.ser.in_waiting()
-            if data_to_read >= stop_value:
-                break
-            time.sleep(0.1)
-        raw_data = self.ser.read(data_to_read)
+        #while True:
+        #    data_to_read = self.ser.in_waiting()
+        #    if data_to_read >= stop_value:
+        #        break
+        #    time.sleep(0.1)
+        #raw_data = self.ser.read(data_to_read)
+        raw_data = self.ser.read(16)
 
         unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
 
