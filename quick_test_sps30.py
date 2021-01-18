@@ -11,6 +11,7 @@ print(f'1. Test __init__()\n\n')
 sensor_sps30 = sps30.Sps30(device_port, debug=True)
 print(f'Sps30 activated: {sensor_sps30.ser.is_open}')
 print(f'\n\n')
+sensor_sps30.device_information()
 
 # 2. Test start_measurement() default mode -> float values
 # start_up_time recommended values depending on particle air values: 8,16 or 30 seconds.
