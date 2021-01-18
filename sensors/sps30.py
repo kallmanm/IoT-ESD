@@ -123,7 +123,7 @@ class Sps30:
         else:
             stop_value = 47
 
-        self.ser.flush.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
+        self.ser.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
         while True:
