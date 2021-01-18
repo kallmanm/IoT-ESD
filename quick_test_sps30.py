@@ -2,6 +2,7 @@
 Test script for Sps30 class testing that baseline class functionality is working.
 """
 from sensors import sps30
+import time
 
 device_port = "/dev/ttyUSB0"
 
@@ -29,6 +30,7 @@ print(f'3. Test read_measured_values() default mode -> float values')
 for i in range(2):
     data_readout = sensor_sps30.read_measured_values()
     print(f'data output number {i}: {data_readout}')
+    time.sleep(1)
 print(f'\n\n')
 
 # 4. Test stop_measurement()
