@@ -28,13 +28,13 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
         self.debug = debug
 
-    @staticmethod
-    def byte_unstuffing(data):
+    def byte_unstuffing(self, data):
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
 
-        print(f'Pre byte-unstuffing:{data}')
+        if self.debug:
+            print(f'Pre byte_unstuffing:{data}')
         if b'\x7D\x5E' in data:
             data = data.replace(b'\x7D\x5E', b'\x7E')
         if b'\x7D\x5D' in data:
@@ -43,7 +43,9 @@ class Sps30:
             data = data.replace(b'\x7D\x31', b'\x11')
         if b'\x7D\x33' in data:
             data = data.replace(b'\x7D\x33', b'\x13')
-        print(f'Post byte-unstuffing:{data}')
+        if self.debug:
+            print(f'Post byte_unstuffing:{data}')
+
         return data
 
     @staticmethod
@@ -55,6 +57,7 @@ class Sps30:
         """
 
         error_msg = ""
+
         if b'\x00' in byte:
             error_msg = 'No error'
         if b'\x01' in byte:
@@ -69,6 +72,7 @@ class Sps30:
             error_msg = 'Internal function argument out of range'
         if b'\x43' in byte:
             error_msg = 'Command not allowed in current state'
+
         return error_msg
 
     def start_measurement(self, mode='float', start_up_time=30):
