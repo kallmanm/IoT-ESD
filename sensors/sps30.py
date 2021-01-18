@@ -93,10 +93,13 @@ class Sps30:
         self.ser.write(cmd)
 
         if self.debug:
+            print(f'Response Status start_measurement():')
             raw_response = self.ser.read(7)
+            print(f'raw_response: {raw_response}')
             response = self.byte_unstuffing(raw_response)
+            print(f'response: {response}')
             error_msg = self.error_msg_check(response[3])
-            print(f'Response Status start_measurement(): {error_msg}')
+            print(f'error_msg: {error_msg}')
 
         time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
 
@@ -108,10 +111,13 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
 
         if self.debug:
+            print(f'Response Status stop_measurement():')
             raw_response = self.ser.read(7)
+            print(f'raw_response: {raw_response}')
             response = self.byte_unstuffing(raw_response)
+            print(f'response: {response}')
             error_msg = self.error_msg_check(response[3])
-            print(f'Response Status stop_measurement(): {error_msg}')
+            print(f'error_msg: {error_msg}')
 
     def read_measured_values(self, mode='float'):
         """
@@ -136,9 +142,13 @@ class Sps30:
         unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
 
         if self.debug:
-            error_flag = unstuffed_raw_data[3]
-            error_msg = self.error_msg_check(error_flag)
-            print(f'Response Status read_measured_values(): {error_msg}')
+            print(f'Response Status read_measured_values():')
+            raw_response = self.ser.read(7)
+            print(f'raw_response: {raw_response}')
+            response = self.byte_unstuffing(raw_response)
+            print(f'response: {response}')
+            error_msg = self.error_msg_check(response[3])
+            print(f'error_msg: {error_msg}')
 
         # Datasheet 5.2: Figure 4 MISO Frame.
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
@@ -148,12 +158,16 @@ class Sps30:
                 data = struct.unpack(">iiiiiiiiii", rx_data)  # format = big-endian 10 integers
             # TODO: improve error handling
             except struct.error:
+                if self.debug:
+                    print(f'error in unpacking rx_data:\n{rx_data}')
                 data = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         else:
             try:
                 data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
             # TODO: improve error handling
             except struct.error:
+                if self.debug:
+                    print(f'error in unpacking rx_data:\n{rx_data}')
                 data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         return data
