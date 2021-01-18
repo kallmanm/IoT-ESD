@@ -86,6 +86,7 @@ class Sps30:
 
         # mode = float cmd
         cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E]
+
         if mode == 'integer':
             cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x05, 0xF7, 0x7E]
 
@@ -214,7 +215,7 @@ class Sps30:
         # Disabled, use with caution.
         # self.ser.write([0x7E, 0x00, 0x80, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x7E])
 
-    def device_information(self, type='product_type'):
+    def device_information(self, return_info='product_type'):
         """
         Datasheet 5.3.8
         response info:
@@ -226,7 +227,8 @@ class Sps30:
         cmd = 0x00
         check = 0x2E
         stop_value = 16
-        if type == 'serial_number':
+
+        if return_info == 'serial_number':
             cmd = 0x03
             check = 0x2B
             stop_value = 28
