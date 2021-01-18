@@ -1,14 +1,14 @@
 """
 Test script for Sps30 class testing that all class functionality is working.
 """
-from sensors import Sps30
+from sensors import sps30
 
 device_port = "/dev/ttyUSB0"
 
 # 1. Test __init__()
 print(f'----------')
 print(f'1. Test __init__()\n\n')
-sensor_sps30 = Sps30(device_port, debug=True)
+sensor_sps30 = sps30(device_port, debug=True)
 print(f'Sps30 activated: {sensor_sps30.ser.is_open}')
 print(f'\n\n')
 

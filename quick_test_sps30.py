@@ -1,7 +1,7 @@
 """
 Test script for Sps30 class testing that baseline class functionality is working.
 """
-from ..sensors import sps30
+from sensors import sps30
 
 device_port = "/dev/ttyUSB0"
 
