@@ -164,7 +164,7 @@ class Sps30:
         Datasheet 5.3.4
         """
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
 
         if self.debug:
@@ -178,7 +178,7 @@ class Sps30:
         Datasheet 5.3.5
         """
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0xFF])
         self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
 
@@ -193,7 +193,7 @@ class Sps30:
         Datasheet 5.3.6
         """
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
         if self.debug:
@@ -208,7 +208,7 @@ class Sps30:
         """
 
         # TODO: Review code and method
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         # Read Auto Cleaning Interval:
         self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
         # Write Auto Cleaning Interval to 0 (disable):
@@ -233,7 +233,7 @@ class Sps30:
             check = 0x2B
             stop_value = 28
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
 
         while True:
@@ -262,7 +262,7 @@ class Sps30:
         """
 
         stop_value = 14
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
 
         while True:
@@ -293,7 +293,7 @@ class Sps30:
         Datasheet 5.3.10
         """
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
         # TODO: add self.debug check to confirm error status flag
@@ -303,7 +303,7 @@ class Sps30:
         Datasheet 5.3.11
         """
 
-        self.ser.flush.reset_input_buffer()
+        self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
         if self.debug:
