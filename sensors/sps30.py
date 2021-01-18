@@ -58,19 +58,19 @@ class Sps30:
 
         error_msg = ""
 
-        if b'\x00' in byte:
+        if byte == b'\x00':
             error_msg = 'No error'
-        if b'\x01' in byte:
+        if byte == b'\x01':
             error_msg = 'Wrong data length for this command (too much or little data)'
-        if b'\x02' in byte:
+        if byte == b'\x02':
             error_msg = 'Unknown command'
-        if b'\x03' in byte:
+        if byte == b'\x03':
             error_msg = 'No access right for command'
-        if b'\x04' in byte:
+        if byte == b'\x04':
             error_msg = 'Illegal command parameter or parameter out of allowed range'
-        if b'\x28' in byte:
+        if byte == b'\x28':
             error_msg = 'Internal function argument out of range'
-        if b'\x43' in byte:
+        if byte == b'\x43':
             error_msg = 'Command not allowed in current state'
 
         return error_msg
