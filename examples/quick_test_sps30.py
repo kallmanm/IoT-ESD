@@ -1,5 +1,5 @@
 """
-Test script for Sps30 class testing all class functionality is working.
+Test script for Sps30 class testing that baseline class functionality is working.
 """
 from ..sensors import sps30
 
