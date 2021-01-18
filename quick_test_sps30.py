@@ -27,7 +27,7 @@ print(f'\n\n')
 # 3. Test read_measured_values() default mode -> float values
 print(f'----------')
 print(f'3. Test read_measured_values() default mode -> float values')
-for i in range(2):
+for i in range(10):
     data_readout = sensor_sps30.read_measured_values()
     print(f'data output number {i}: {data_readout}')
     time.sleep(1)
