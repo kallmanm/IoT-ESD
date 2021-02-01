@@ -23,5 +23,6 @@ class SensorManager:
         # do actions if activated
         # Maybe use Python IPC
         # https://docs.python.org/3.7/library/ipc.html
+        # Asynchronous I/O shows promise... coroutines and tasks.
         pass
 

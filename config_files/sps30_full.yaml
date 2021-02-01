@@ -1,0 +1,54 @@
+---
+# https://stackoverflow.com/questions/35590381/input-yaml-config-values-into-keyword-arguments-for-python
+# Example Config Yaml File for the SensorManager Class found in sensor_manager.py
+# The sensors object contains all available sensors that the SensorManager Class can use.
+# Sps30 is functional and scd30 and svm30 are with as examples to illustrate how it might look.
+sensors:
+  sps30:
+    port: /dev/ttyUSB0
+    debug: True
+  scd30:
+    port: /dev/ttyUSB1
+    debug: False
+  svm30:
+    port: /dev/ttyUSB2
+    debug: False
+# The tasks object contains a list of operations that you wish the SensorManager Class to perform.
+# Inside each list element is a object with the name of the sensor that you want to perform a task. Sps30 is used
+# in this example.
+# Below is listed all available actions that the sps30 sensor can perform.
+tasks:
+  - sps30:
+      task: start_measurement
+      method_parameters:
+        mode: float
+        start_up_time: 8
+  - sps30:
+      task: read_measured_values
+      measurement_samples: 30
+      method_parameters:
+        mode: float
+  - sps30:
+      task: sleep
+  - sps30:
+      task: wake_up
+  - sps30:
+      task: start_fan_cleaning
+  - sps30:
+      task: device_information
+      method_parameters:
+        return_info: product_type
+  - sps30:
+      task: read_version
+  - sps30:
+      task: read_device_status_register
+  - sps30:
+      task: device_reset
+# Svm30 thrown into the mix to make sure reading data is ok.
+  - svm30:
+      task: sleep
+  - sps30:
+      task: open_port
+  - sps30:
+      task: close_port
+...

@@ -1,0 +1,24 @@
+---
+# Short Example for sps30 sensor.
+sensors:
+  sps30:
+    port: /dev/ttyUSB0
+    debug: True
+tasks:
+  - sps30:
+      task: device_information
+      method_parameters:
+        return_info: product_type
+  - sps30:
+      task: device_information
+      method_parameters:
+        return_info: serial_numner
+  - sps30:
+      task: read_version
+  - sps30:
+      task: read_device_status_register
+  - sps30:
+      task: device_reset
+  - sps30:
+      task: close_port
+...
