@@ -28,6 +28,9 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
         self.debug = debug
 
+    # TODO: add byte stuffing:
+    # https://sensirion.github.io/python-shdlc-driver/_modules/sensirion_shdlc_driver/serial_frame_builder.html
+
     def byte_unstuffing(self, data):
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
