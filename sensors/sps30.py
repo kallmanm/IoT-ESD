@@ -11,6 +11,11 @@ import serial
 import struct
 import time
 
+# TODO: 1. add returns on all sensor methods
+# TODO: 2. add byte stuffing method
+# TODO: 3. fix byte unstuffing method
+# TODO: 4. fix debug outputs
+
 
 class Sps30:
     """
