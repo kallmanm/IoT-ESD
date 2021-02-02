@@ -1,16 +1,7 @@
 from sensors import sps30
 import time
 import yaml
-
-# import argparse
-
-# with open('sensors.yaml') as f:
-#    data = yaml.load(f, Loader=yaml.FullLoader)
-#    sensor_bridge_spec = data["sensor-bridge"]
-#    svm30_spec = data["sensors"]["svm30"]
-#    scd30_spec = data["sensors"]["scd30"]
-#    print(svm30_spec)
-#    print(scd30_spec)
+import argparse
 
 # do actions if activated
 # Maybe use Python IPC
@@ -107,12 +98,19 @@ class SensorManager:
 
 
 if __name__ == "__main__":
-    # do argparsing
-    # run code as script
-    with open('config_files/sps30_short.yaml') as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-c',
+        dest='config_file',
+        type=argparse.FileType(mode='r'))
+    parser.add_argument(
+        '--config-file',
+        dest='config_file',
+        type=argparse.FileType(mode='r'))
+    args = parser.parse_args()
+    yaml_instructions = yaml.load(args.config_file, Loader=yaml.FullLoader)
     try:
-        sensor = SensorManager(**data)
+        sensor = SensorManager(**yaml_instructions)
     except TypeError as e:
         print(f'Error in yaml file.\nError: {e}')
     quit()
