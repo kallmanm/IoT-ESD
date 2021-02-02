@@ -23,6 +23,11 @@ class Sps30:
     Datasheet 5.0: UART Interface settings.
     """
 
+    START_STOP_BYTE = 0x7E
+    ESCAPE_BYTE = 0x7D
+    ESCAPE_XOR = 0x20
+    CHARS_TO_ESCAPE = [START_STOP_BYTE, ESCAPE_BYTE, 0x11, 0x13]
+
     def __init__(self, port, debug=False):
         self.port = port
         self.ser = serial.Serial(self.port,
@@ -33,6 +38,21 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
         self.debug = debug
 
+    @staticmethod
+    def calculate_checksum(list_of_bytes):
+        """
+        The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
+        The checksum is defined as follows:
+        1. Sum all bytes between start and stop (without start and stop bytes).
+        2. Take the least significant byte of the result and invert it. This will be the checksum.
+        For a MOSI frame use Address, Command, Length and Data to calculate the checksum.
+        For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.
+        :param bytearray list_of_bytes:
+        :return checksum byte:
+        """
+        # return ~sum(frame) & 0xFF
+        return 0xFF - sum(list_of_bytes)
+
     # TODO: add byte stuffing:
     # https://sensirion.github.io/python-shdlc-driver/_modules/sensirion_shdlc_driver/serial_frame_builder.html
 
@@ -41,8 +61,6 @@ class Sps30:
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
 
-        if self.debug:
-            print(f'Pre byte_unstuffing:{data}')
         if b'\x7D\x5E' in data:
             data = data.replace(b'\x7D\x5E', b'\x7E')
         if b'\x7D\x5D' in data:
@@ -51,8 +69,6 @@ class Sps30:
             data = data.replace(b'\x7D\x31', b'\x11')
         if b'\x7D\x33' in data:
             data = data.replace(b'\x7D\x33', b'\x13')
-        if self.debug:
-            print(f'Post byte_unstuffing:{data}')
 
         return data
 

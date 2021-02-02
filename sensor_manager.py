@@ -1,5 +1,7 @@
 from sensors import sps30
 import time
+import yaml
+
 # import argparse
 
 # with open('sensors.yaml') as f:
@@ -80,15 +82,39 @@ class SensorManager:
 
     def do_tasks(self):
         for index, task in enumerate(self.tasks):
-            if 'sps30' in task.keys():
-                result = self.sps30_task(**task['sps30'])
-                self.data.append(result)
-            elif 'scd30' in task.keys():
-                # TODO: scd30 method
-                pass
-            elif 'svm30' in task.keys():
-                # TODO: svm30 method
-                print('svm30 command')
-                pass
-            else:
-                print(f'unsupported task attempted: {task}')
+            try:
+                if 'sps30' in task.keys():
+                    result = self.sps30_task(**task['sps30'])
+                    self.data.append(result)
+                elif 'scd30' in task.keys():
+                    msg = 'NOT IMPLEMENTED: scd30 task'
+                    self.data.append(msg)
+                    print(msg)
+                elif 'svm30' in task.keys():
+                    msg = 'NOT IMPLEMENTED: svm30 task'
+                    self.data.append(msg)
+                    print(msg)
+                elif 'send_data' in task.keys():
+                    msg = 'data sent!'
+                    self.data.append(msg)
+                    print(msg)
+                else:
+                    msg = f'Unsupported task attempted: {task}'
+                    self.data.append(msg)
+                    print(msg)
+            except AttributeError as err:
+                msg = f'Error in task:{task} - ErrorMessage:{err}'
+                self.data.append(msg)
+                print(msg)
+
+
+if __name__ == "__main__":
+    # do argparsing
+    # run code as script
+    with open('test.yaml') as f:
+        data = yaml.load(f, Loader=yaml.FullLoader)
+    try:
+        sensor = SensorManager(**data)
+    except TypeError as e:
+        print(f'Error in yaml file.\nError: {e}')
+    quit()
