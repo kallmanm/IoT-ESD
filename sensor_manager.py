@@ -89,15 +89,13 @@ class SensorManager:
                 elif 'scd30' in task.keys():
                     msg = 'NOT IMPLEMENTED: scd30 task'
                     self.data.append(msg)
-                    print(msg)
                 elif 'svm30' in task.keys():
                     msg = 'NOT IMPLEMENTED: svm30 task'
                     self.data.append(msg)
-                    print(msg)
                 elif 'send_data' in task.keys():
+                    # TODO: added data sending functionality
                     msg = 'data sent!'
                     self.data.append(msg)
-                    print(msg)
                 else:
                     msg = f'Unsupported task attempted: {task}'
                     self.data.append(msg)
@@ -111,7 +109,7 @@ class SensorManager:
 if __name__ == "__main__":
     # do argparsing
     # run code as script
-    with open('test.yaml') as f:
+    with open('config_files/sps30_short.yaml') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
     try:
         sensor = SensorManager(**data)
