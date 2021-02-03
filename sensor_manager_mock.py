@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import yaml
 import argparse
 import time
@@ -198,6 +197,7 @@ if __name__ == "__main__":
     yaml_instructions = yaml.load(args.config_file, Loader=yaml.FullLoader)
     try:
         sensor = SensorManagerMock(**yaml_instructions)
+        print(sensor.data)
     except TypeError as e:
         print(f'Error in yaml file.\nError: {e}')
     quit()
