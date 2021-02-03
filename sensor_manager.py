@@ -85,6 +85,9 @@ class SensorManager:
                     self.data.append(msg)
                 elif 'send_data' in task.keys():
                     # TODO: added data sending functionality
+                    # 1. fix data structure
+                    # 2. gzip (optional)
+                    # 3. encode to base 64
                     msg = 'data sent!'
                     self.data.append(msg)
                 else:
