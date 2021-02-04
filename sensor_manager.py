@@ -8,6 +8,8 @@ import argparse
 # https://docs.python.org/3.7/library/ipc.html
 # Asynchronous I/O shows promise... coroutines and tasks.
 
+# TODO: Add aggregate function, Add encrypt function
+
 
 class SensorManager:
     def __init__(self, sensors, tasks):
@@ -18,6 +20,14 @@ class SensorManager:
         self.sensors = sensors
         self.tasks = tasks
         self.do_tasks()
+
+    @staticmethod
+    def aggregate(data):
+        return data
+
+    @staticmethod
+    def encrypt(data):
+        return data
 
     def sps30_task(self, task, measurement_samples=1, method_parameters=None):
 
