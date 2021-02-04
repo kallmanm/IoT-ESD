@@ -2,6 +2,8 @@
 Utility functions.
 """
 import yaml
+import json
+import base64
 
 
 class CustomerTaskYaml:
@@ -18,34 +20,33 @@ class CustomerTaskYaml:
 
 
 def create_sensor_manager_yaml(input_yaml, save=False):
+    # TODO: ADD SUPPORT FOR JSON
     with open(input_yaml) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
-    obj = CustomerTaskYaml(**data)
+    cty: CustomerTaskYaml = CustomerTaskYaml(**data)
     # TODO: modify data
     new_data = {
-        'sensors': {f'{obj.sensor}': {'port': '/dev/ttyUSB0', 'debug': False}},
-        'tasks': make_task(obj)
+        'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0', 'debug': False}},
+        'tasks': make_task(cty)
     }
     if save:
         with open(r'complex.yaml', 'w') as file:
-            documents = yaml.dump(new_data, file)
+            yaml.dump(new_data, file)
+
     return new_data
 
 
 def make_task(obj):
     # start_measurement
     # read_measured_values
-    tasks = [{f'{obj.sensor}': {'task':
-                                'start_measurement',
-                                'method_parameters': {
-                                    'mode': f'{obj.mode}',
-                                    'start_up_time': 8}}},
-             {f'{obj.sensor}': {'task':
-                                'read_measured_values',
-                                'measurement_samples': int(obj.sample_amount),
-                                'method_parameters': {'mode': f'{obj.mode}'}}
-              }]
-
+    tasks = [{f'{obj.sensor}': {'task': 'start_measurement',
+                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 8}}},
+             {f'{obj.sensor}': {'task': 'read_measured_values',
+                                'measurement_samples': int(obj.samples),
+                                'measurement_rate': int(obj.rate),
+                                'measurement_amount': int(obj.amount),
+                                'method_parameters': {'mode': f'{obj.mode}'}}}]
+    # REMOVE IF STATEMENT IF NO OTHER TYPES THAN ALL ARE IMPLEMENTED
     if obj.type == 'all':
         # split data and return only what is requested
         pass
@@ -59,3 +60,19 @@ def make_task(obj):
     tasks.append({f'{obj.sensor}': {'task': 'close_port'}})
 
     return tasks
+
+
+def encode_base64(data):
+    # Encode data in base64
+    to_string = json.dumps(data)
+    to_bytes = str.encode(to_string)
+    encoded = base64.b64encode(to_bytes)
+
+    return encoded.decode()
+
+
+def decode_base64(data):
+    # Decode from base64
+    to_bytes = base64.b64decode(data)
+
+    return json.loads(to_bytes)
