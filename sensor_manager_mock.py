@@ -117,7 +117,7 @@ class SensorManagerMock:
         self.encoded_data = ''
         self.data['start-time'] = self.return_timestamp()
         self.do_tasks()
-        self.data['stop-time'] = self.return_timestamp()
+        self.data['stop-time'] = ''
 
     @staticmethod
     def return_timestamp():
@@ -237,6 +237,7 @@ class SensorManagerMock:
                     else:
                         result = self.sps30_task(**task['sps30'])
                         self.log_data.append(result)
+                    self.data['stop-time'] = self.return_timestamp()
                 elif 'scd30' in task.keys():
                     msg = 'NOT IMPLEMENTED: scd30 task'
                     self.log_data.append(msg)
