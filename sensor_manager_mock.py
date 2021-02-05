@@ -135,7 +135,8 @@ class SensorManagerMock:
             for amount in range(measurement_amount):  # 3 times
                 # do measurement_samples 4 times
                 for sample in range(measurement_samples):
-                    sensor_data[time.strftime('%Y-%m-%d %H:%M:%S %Z')] = self.sps30.read_measured_values(**method_parameters)
+                    sensor_data[time.strftime('%Y-%m-%d %H:%M:%S %Z')] = self.sps30.read_measured_values(
+                        **method_parameters)
                     time.sleep(1)
                 # wait measurement_rate 1 min
                 if amount < measurement_amount - 1:
@@ -226,15 +227,15 @@ class SensorManagerMock:
                     msg = 'NOT IMPLEMENTED: svm30 task'
                     self.log_data.append(msg)
                 elif 'send_data' in task.keys():
-                    # TODO: update
+                    # TODO: update SEND
                     msg = 'data sent!'
                     self.log_data.append(msg)
                 elif 'aggregate' in task.keys():
-                    # todo: update
+                    # todo: update AGGR
                     msg = 'data aggregated'
                     self.log_data.append(msg)
                 elif 'encrypt' in task.keys():
-                    # todo: update
+                    # todo: update ENCRYPT
                     msg = 'data encrypted'
                     self.log_data.append(msg)
                 else:
