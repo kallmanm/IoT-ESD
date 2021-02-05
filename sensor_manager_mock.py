@@ -2,6 +2,8 @@ import yaml
 import argparse
 import time
 import random
+import base64
+import json
 from sm_utils import utils as u
 
 
@@ -99,15 +101,23 @@ class Sps30Mock:
 
 
 class SensorManagerMock:
-
     def __init__(self, sensors, tasks):
-        for SENSOR in sensors:
-            if 'sps30' in SENSOR:
-                self.sps30 = Sps30Mock(**sensors[SENSOR])
+        for sensor in sensors:
+            if 'sps30' in sensor:
+                self.sps30 = Sps30Mock(**sensors[sensor])
+
         self.sensors = sensors
         self.tasks = tasks
-        self.data = []
+        self.data = {}
+        self.log_data = []
+        self.data['start-time'] = self.return_timestamp()
         self.do_tasks()
+        self.data['stop-time'] = self.return_timestamp()
+
+    @staticmethod
+    def return_timestamp():
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+        return timestamp
 
     def sps30_task(self,
                    task,
@@ -120,18 +130,16 @@ class SensorManagerMock:
             return self.sps30.start_measurement(**method_parameters)
 
         elif task == 'read_measured_values':
-            sensor_data = []
+            sensor_data = {}
             # UPDATE to account for measurement_samples: 4 measurement_rate: 5 measurement_amount: 3
             for amount in range(measurement_amount):  # 3 times
                 # do measurement_samples 4 times
                 for sample in range(measurement_samples):
-                    stamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-                    sensor_data.append(stamp)
-                    sensor_data.append(self.sps30.read_measured_values(**method_parameters))
+                    sensor_data[time.strftime('%Y-%m-%d %H:%M:%S %Z')] = self.sps30.read_measured_values(**method_parameters)
                     time.sleep(1)
                 # wait measurement_rate 1 min
                 if amount < measurement_amount - 1:
-                    # TODO: change time.sleep() to 60 when done with dev
+                    # TODO: change time.sleep to 60 when done dev
                     time.sleep(6 * measurement_rate - measurement_samples)
 
             return sensor_data
@@ -174,27 +182,67 @@ class SensorManagerMock:
             sensor_data = f'invalid task: {task}'
             return sensor_data
 
+    @staticmethod
+    def aggregate(self, data):
+        # numpy
+        pass
+
+    @staticmethod
+    def encrypt(self, data):
+        pass
+
+    @staticmethod
+    def encode_base64(data):
+        # Encode data in base64
+        to_string = json.dumps(data)
+        to_bytes = str.encode(to_string)
+        encoded = base64.b64encode(to_bytes)
+
+        return encoded.decode()
+
+    @staticmethod
+    def decode_base64(data):
+        # Decode from base64
+        to_bytes = base64.b64decode(data)
+
+        return json.loads(to_bytes)
+
     def do_tasks(self):
         for index, task in enumerate(self.tasks):
             try:
                 if 'sps30' in task.keys():
-                    result = self.sps30_task(**task['sps30'])
-                    self.data.append(result)
+                    # check if read_measured_values
+                    if task['sps30']['task'] == 'read_measured_values':
+                        self.log_data.append('read_measured_values')
+                        result = self.sps30_task(**task['sps30'])
+                        self.data['sensor-data'] = result
+                    else:
+                        result = self.sps30_task(**task['sps30'])
+                        self.log_data.append(result)
                 elif 'scd30' in task.keys():
                     msg = 'NOT IMPLEMENTED: scd30 task'
-                    self.data.append(msg)
+                    self.log_data.append(msg)
                 elif 'svm30' in task.keys():
                     msg = 'NOT IMPLEMENTED: svm30 task'
-                    self.data.append(msg)
+                    self.log_data.append(msg)
                 elif 'send_data' in task.keys():
+                    # TODO: update
                     msg = 'data sent!'
-                    self.data.append(msg)
+                    self.log_data.append(msg)
+                elif 'aggregate' in task.keys():
+                    # todo: update
+                    msg = 'data aggregated'
+                    self.log_data.append(msg)
+                elif 'encrypt' in task.keys():
+                    # todo: update
+                    msg = 'data encrypted'
+                    self.log_data.append(msg)
                 else:
                     msg = f'Unsupported task attempted: {task}'
-                    self.data.append(msg)
+                    self.log_data.append(msg)
             except AttributeError as e:
                 msg = f'Error in task:{task} - ErrorMessage:{e}'
-                self.data.append(msg)
+                self.log_data.append(msg)
 
 
 if __name__ == "__main__":
@@ -212,10 +260,10 @@ if __name__ == "__main__":
     try:
         # with customer yaml
         new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
-        sensor = SensorManagerMock(**new_yaml)
+        device = SensorManagerMock(**new_yaml)
         # with admin yaml
-        # sensor = SensorManagerMock(**yaml_instructions)
-        print(sensor.data)
+        # device = SensorManagerMock(**yaml_instructions)
+        print(device.data)
     except TypeError as e:
-        print(f'Error in yaml file.\nError: {e}')
+        print(f'Error: {e}')
     quit()
