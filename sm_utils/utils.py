@@ -35,7 +35,7 @@ def create_sensor_manager_yaml(params, save=False):
     # TODO: ADD SUPPORT FOR JSON
     #with open(input_yaml) as f:
     #    data = yaml.load(f, Loader=yaml.FullLoader)
-    cty: CustomerTaskYaml = CustomerTaskYaml(**params)
+    cty: CustomerTaskYaml = CustomerTaskYaml(params)
     # TODO: modify data
     new_data = {
         'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0', 'debug': False}},
