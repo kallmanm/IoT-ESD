@@ -4,6 +4,7 @@ import time
 import random
 import base64
 import json
+import numpy as np
 from sm_utils import utils as u
 
 
@@ -110,6 +111,10 @@ class SensorManagerMock:
         self.tasks = tasks
         self.data = {}
         self.log_data = []
+        self.measurement_samples = 0
+        self.measurement_rate = 0
+        self.measurement_amount = 0
+        self.encoded_data = ''
         self.data['start-time'] = self.return_timestamp()
         self.do_tasks()
         self.data['stop-time'] = self.return_timestamp()
@@ -130,19 +135,19 @@ class SensorManagerMock:
             return self.sps30.start_measurement(**method_parameters)
 
         elif task == 'read_measured_values':
+            self.measurement_samples = measurement_samples
+            self.measurement_rate = measurement_rate
+            self.measurement_amount = measurement_amount
             sensor_data = {}
-            # UPDATE to account for measurement_samples: 4 measurement_rate: 5 measurement_amount: 3
-            for amount in range(measurement_amount):  # 3 times
-                # do measurement_samples 4 times
+            for amount in range(measurement_amount):
                 for sample in range(measurement_samples):
-                    sensor_data[time.strftime('%Y-%m-%d %H:%M:%S %Z')] = self.sps30.read_measured_values(
+                    sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(
                         **method_parameters)
                     time.sleep(1)
-                # wait measurement_rate 1 min
                 if amount < measurement_amount - 1:
-                    # TODO: change time.sleep to 60 when done dev
-                    time.sleep(6 * measurement_rate - measurement_samples)
-
+                    # TODO: change time.sleep to 60 when done with dev
+                    # time.sleep(60 * measurement_rate - measurement_samples)
+                    time.sleep(0.1)
             return sensor_data
 
         elif task == 'stop_measurement':
@@ -183,10 +188,22 @@ class SensorManagerMock:
             sensor_data = f'invalid task: {task}'
             return sensor_data
 
-    @staticmethod
-    def aggregate(self, data):
-        # numpy
-        pass
+    def aggregate(self):
+        # aggregating keys
+        keys = list(self.data['sensor-data'].keys())
+        np_array_k = np.array(keys)
+        split_array_k = np.array(np.array_split(np_array_k, self.measurement_amount))
+        aggregated_keys = [k[-1].tolist() for k in split_array_k]
+
+        # aggregating values
+        values = list(self.data['sensor-data'].values())
+        np_array_v = np.array(values)
+        split_array_v = np.array(np.array_split(np_array_v, self.measurement_amount))
+        aggregated_values = [v.mean(axis=0).tolist() for v in split_array_v]
+
+        aggregated_dict = {key: value for (key, value) in zip(aggregated_keys, aggregated_values)}
+
+        return aggregated_dict
 
     @staticmethod
     def encrypt(self, data):
@@ -231,13 +248,15 @@ class SensorManagerMock:
                     msg = 'data sent!'
                     self.log_data.append(msg)
                 elif 'aggregate' in task.keys():
-                    # todo: update AGGR
-                    msg = 'data aggregated'
-                    self.log_data.append(msg)
+                    self.data['sensor-data'] = self.aggregate()
+                    self.log_data.append('data aggregated')
                 elif 'encrypt' in task.keys():
                     # todo: update ENCRYPT
                     msg = 'data encrypted'
                     self.log_data.append(msg)
+                elif 'encode' in task.keys():
+                    encoded_data = self.encode_base64(self.data)
+                    self.encoded_data += encoded_data
                 else:
                     msg = f'Unsupported task attempted: {task}'
                     self.log_data.append(msg)
@@ -261,10 +280,15 @@ if __name__ == "__main__":
     try:
         # with customer yaml
         new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
+        #print(new_yaml)
+        print('-------------')
         device = SensorManagerMock(**new_yaml)
         # with admin yaml
         # device = SensorManagerMock(**yaml_instructions)
-        print(device.data)
+        #print(device.data)
+        print(device.encoded_data)
+        print('-------------')
+        print(device.decode_base64(device.encoded_data))
     except TypeError as e:
         print(f'Error: {e}')
     quit()

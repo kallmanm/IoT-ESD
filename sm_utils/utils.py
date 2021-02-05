@@ -51,8 +51,9 @@ def create_sensor_manager_yaml(params, save=False):
 def make_task(obj):
     # start_measurement
     # read_measured_values
+    # todo: set start_up_time ti 8 after dev work done
     tasks = [{f'{obj.sensor}': {'task': 'start_measurement',
-                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 8}}},
+                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 1}}},
              {f'{obj.sensor}': {'task': 'read_measured_values',
                                 'measurement_samples': int(obj.samples),
                                 'measurement_rate': int(obj.rate),
@@ -66,6 +67,8 @@ def make_task(obj):
         tasks.append({f'aggregate': obj.aggregate})
     if obj.encrypt:
         tasks.append({f'encrypt': obj.encrypt})
+    # encode base64
+    tasks.append({f'encode': True})
     # stop_measurement
     tasks.append({f'{obj.sensor}': {'task': 'stop_measurement'}})
     # close_port
