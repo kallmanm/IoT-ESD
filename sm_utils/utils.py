@@ -23,19 +23,19 @@ class CustomerTaskYaml:
         self.params = params
         self.sensor = params.get('sensor')
         self.type = params.get('type')
-        self.sample_amount = params.get('sample_amount')
-        self.sample_rate = params.get('sample_rate')
-        self.sample_size = params.get('sample_size')
+        self.samples = params.get('samples')
+        self.rate = params.get('rate')
+        self.amount = params.get('amount')
         self.mode = params.get('mode')
         self.aggregate = params.get('aggregate')
         self.encrypt = params.get('encrypt')
 
 
-def create_sensor_manager_yaml(input_yaml, save=False):
+def create_sensor_manager_yaml(params, save=False):
     # TODO: ADD SUPPORT FOR JSON
-    with open(input_yaml) as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
-    cty: CustomerTaskYaml = CustomerTaskYaml(**data)
+    #with open(input_yaml) as f:
+    #    data = yaml.load(f, Loader=yaml.FullLoader)
+    cty: CustomerTaskYaml = CustomerTaskYaml(**params)
     # TODO: modify data
     new_data = {
         'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0', 'debug': False}},

@@ -2,6 +2,7 @@ import yaml
 import argparse
 import time
 import random
+from sm_utils import utils as u
 
 
 class Sps30Mock:
@@ -98,28 +99,41 @@ class Sps30Mock:
 
 
 class SensorManagerMock:
+
     def __init__(self, sensors, tasks):
         for SENSOR in sensors:
             if 'sps30' in SENSOR:
                 self.sps30 = Sps30Mock(**sensors[SENSOR])
-
         self.sensors = sensors
         self.tasks = tasks
         self.data = []
         self.do_tasks()
 
-    def sps30_task(self, task, measurement_samples=1, method_parameters=None):
+    def sps30_task(self,
+                   task,
+                   measurement_samples=1,
+                   measurement_rate=1,
+                   measurement_amount=1,
+                   method_parameters=None):
 
         if task == 'start_measurement':
             return self.sps30.start_measurement(**method_parameters)
 
         elif task == 'read_measured_values':
             sensor_data = []
-            for sample in range(measurement_samples):
-                stamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-                sensor_data.append(stamp)
-                sensor_data.append(self.sps30.read_measured_values(**method_parameters))
-                time.sleep(1)
+            # UPDATE to account for measurement_samples: 4 measurement_rate: 5 measurement_amount: 3
+            for amount in range(measurement_amount):  # 3 times
+                # do measurement_samples 4 times
+                for sample in range(measurement_samples):
+                    stamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+                    sensor_data.append(stamp)
+                    sensor_data.append(self.sps30.read_measured_values(**method_parameters))
+                    time.sleep(1)
+                # wait measurement_rate 1 min
+                if amount < measurement_amount - 1:
+                    # TODO: change time.sleep() to 60 when done with dev
+                    time.sleep(6 * measurement_rate - measurement_samples)
+
             return sensor_data
 
         elif task == 'stop_measurement':
@@ -196,7 +210,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     yaml_instructions = yaml.load(args.config_file, Loader=yaml.FullLoader)
     try:
-        sensor = SensorManagerMock(**yaml_instructions)
+        # with customer yaml
+        new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
+        sensor = SensorManagerMock(**new_yaml)
+        # with admin yaml
+        # sensor = SensorManagerMock(**yaml_instructions)
         print(sensor.data)
     except TypeError as e:
         print(f'Error in yaml file.\nError: {e}')
