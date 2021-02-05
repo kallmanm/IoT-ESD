@@ -6,6 +6,18 @@ import json
 import base64
 
 
+def calculate_checksum(bytearray):
+    """
+    The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame. The checksum
+    is defined as follows:
+    1. Sum all bytes between start and stop (without start and stop bytes).
+    2. Take the least significant byte of the result and invert it. This will be the checksum.
+    For a MOSI frame use Address, Command, Length and Data to calculate the checksum.
+    For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.
+    """
+    return 0xFF - sum(bytearray)
+
+
 class CustomerTaskYaml:
     def __init__(self, params):
         self.params = params
