@@ -58,7 +58,9 @@ def make_task(obj):
                                 'measurement_samples': int(obj.samples),
                                 'measurement_rate': int(obj.rate),
                                 'measurement_amount': int(obj.amount),
-                                'method_parameters': {'mode': f'{obj.mode}'}}}]
+                                'method_parameters': {'mode': f'{obj.mode}'}}},
+             {f'{obj.sensor}': {'task': 'stop_measurement'}}]
+    # stop_measurement
     # REMOVE IF STATEMENT IF NO OTHER TYPES THAN ALL ARE IMPLEMENTED
     if obj.type == 'all':
         # split data and return only what is requested
@@ -69,8 +71,6 @@ def make_task(obj):
         tasks.append({f'encrypt': obj.encrypt})
     # encode base64
     tasks.append({f'encode': True})
-    # stop_measurement
-    tasks.append({f'{obj.sensor}': {'task': 'stop_measurement'}})
     # close_port
     tasks.append({f'{obj.sensor}': {'task': 'close_port'}})
 

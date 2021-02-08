@@ -116,8 +116,9 @@ class SensorManagerMock:
         self.measurement_amount = 0
         self.encoded_data = ''
         self.data['start-time'] = self.return_timestamp()
-        self.do_tasks()
         self.data['stop-time'] = ''
+        self.do_tasks()
+
 
     @staticmethod
     def return_timestamp():
@@ -232,12 +233,15 @@ class SensorManagerMock:
                     # check if read_measured_values
                     if task['sps30']['task'] == 'read_measured_values':
                         self.log_data.append('read_measured_values')
-                        result = self.sps30_task(**task['sps30'])
-                        self.data['sensor-data'] = result
+                        sensor_data = self.sps30_task(**task['sps30'])
+                        self.data['sensor-data'] = sensor_data
+                    elif task['sps30']['task'] == 'stop_measurement':
+                        sensor_data = self.sps30_task(**task['sps30'])
+                        self.log_data.append(sensor_data)
+                        self.data['stop-time'] = self.return_timestamp()
                     else:
                         result = self.sps30_task(**task['sps30'])
                         self.log_data.append(result)
-                    self.data['stop-time'] = self.return_timestamp()
                 elif 'scd30' in task.keys():
                     msg = 'NOT IMPLEMENTED: scd30 task'
                     self.log_data.append(msg)
@@ -281,7 +285,7 @@ if __name__ == "__main__":
     try:
         # with customer yaml
         new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
-        #print(new_yaml)
+        # print(new_yaml)
         print('-------------')
         device = SensorManagerMock(**new_yaml)
         # with admin yaml
