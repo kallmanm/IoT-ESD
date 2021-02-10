@@ -1,10 +1,26 @@
 """
-    A python class for control of the Sensirion SPS30 Particulate Matter Sensor.
-    The Sps30 class below uses the UART Interface to control the sensor's functionality.
+    A python library for control of the Sensirion SPS30 Particulate Matter Sensor.
 
-    Datasheet: <add link to datasheet>
+    All methods from the Sps30 class are designed according to the official datasheet
+    provided by Sensirion. The datasheet can be found at the following link:
+    https://www.sensirion.com/en/download-center/
+    search: sps30, download: Datasheet Particulate Matter Sensors SPS30
 
-    All 'Datasheet x.x' references in methods refers to the specific sections in above referenced datasheet.
+    Datasheet Version 1.0 – D1 – March 2020 used in the development of this library.
+    Downloaded on 8.1.2021.
+
+    by
+    Mattias Kallman
+    Github: @kallmanm
+    LinkedIn: www.linkedin.com/in/mattias-kallman
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 """
 
 import serial
@@ -17,11 +33,15 @@ import time
 
 class Sps30:
     """
-    Initializing to default sps30 settings.
-    Datasheet 5.0: UART Interface settings.
+    Base class for sps30 sensor.
     """
 
-    def __init__(self, port, debug=False):
+    def __init__(self, port):
+        """
+        Constructor method for Sps30.
+
+        :param port:
+        """
         self.port = port
         self.ser = serial.Serial(self.port,
                                  baudrate=115200,
@@ -29,7 +49,6 @@ class Sps30:
                                  stopbits=serial.STOPBITS_ONE,  # This is default class value
                                  parity=serial.PARITY_NONE,  # This is default class value
                                  timeout=2)  # Set at 2 seconds
-        self.debug = debug
 
     @staticmethod
     def calculate_checksum(list_of_bytes):
@@ -78,11 +97,11 @@ class Sps30:
         """
         """
         REWRITE IN OWN WORDS. USE THIS FORMAT
-                Undo byte-stuffing (replacing stuffed bytes by their original value).
+        Undo byte-stuffing (replacing stuffed bytes by their original value).
 
-                :param bytearray stuffed_data: The data with stuffed bytes.
-                :return: The data without stuffed bytes.
-                :rtype: bytearray
+        :param bytearray stuffed_data: The data with stuffed bytes.
+        :return: The data without stuffed bytes.
+        :rtype: bytearray
         """
         new_frame = bytearray()
 
