@@ -12,8 +12,6 @@ import struct
 import time
 
 
-# TODO: 1. add returns on all sensor methods
-# TODO: 2. fix byte stuff/unstuff
 # https://sensirion.github.io/python-shdlc-driver/_modules/sensirion_shdlc_driver/serial_frame_builder.html
 
 
