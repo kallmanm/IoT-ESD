@@ -190,7 +190,8 @@ class Sps30:
             try:
                 data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
             # TODO: improve error handling
-            except struct.error:
+            except struct.error as e:
+                print(e)
                 if self.debug:
                     print(f'error in unpacking rx_data:\n{rx_data}')
                 data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
