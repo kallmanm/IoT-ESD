@@ -115,10 +115,10 @@ class SensorManagerMock:
         self.measurement_rate = 0
         self.measurement_amount = 0
         self.encoded_data = ''
+        # TODO: add device info; name and serial
         self.data['start-time'] = self.return_timestamp()
         self.data['stop-time'] = ''
         self.do_tasks()
-
 
     @staticmethod
     def return_timestamp():
@@ -142,9 +142,8 @@ class SensorManagerMock:
             sensor_data = {}
             for amount in range(measurement_amount):
                 for sample in range(measurement_samples):
-                    sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(
-                        **method_parameters)
-                    time.sleep(1)
+                    sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(**method_parameters)
+                    time.sleep(1)  # SPS30 needs 1 second between measurements.
                 if amount < measurement_amount - 1:
                     # TODO: change time.sleep to 60 when done with dev
                     # time.sleep(60 * measurement_rate - measurement_samples)
@@ -290,7 +289,6 @@ if __name__ == "__main__":
         device = SensorManagerMock(**new_yaml)
         # with admin yaml
         # device = SensorManagerMock(**yaml_instructions)
-        #print(device.data)
         print(device.encoded_data)
         print('-------------')
         print(device.decode_base64(device.encoded_data))

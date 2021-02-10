@@ -5,15 +5,15 @@ params:
   # What type of data, options are: all
   type: all
   # Number of measurements samples
-  samples: 2
+  samples: 30
   # Rate of sampling (in minutes)---> min: 3 min, max: 30 min
   rate: 1
 
   # The total amount of measurements done
-  amount: 4
+  amount: 5
   # The chosen return data format, float or integer
   mode: float
   # Aggregate samples (true) or return all data (false)
   aggregate: True
   # Encrypt data
-  encrypt: True
+  encrypt: False
