@@ -1,3 +1,5 @@
+# todo: add desc
+"""add desc"""
 import yaml
 import argparse
 import time
@@ -284,7 +286,7 @@ if __name__ == "__main__":
     try:
         # with customer yaml
         new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
-        # print(new_yaml)
+        print(new_yaml)
         print('-------------')
         device = SensorManagerMock(**new_yaml)
         # with admin yaml

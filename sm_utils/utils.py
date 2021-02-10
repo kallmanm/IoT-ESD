@@ -7,6 +7,8 @@ import base64
 
 
 def calculate_checksum(bytearray):
+    # todo: add desc
+    """add desc"""
     """
     The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame. The checksum
     is defined as follows:
@@ -19,6 +21,8 @@ def calculate_checksum(bytearray):
 
 
 class CustomerTaskYaml:
+    # todo: add desc
+    """add desc"""
     def __init__(self, params):
         self.params = params
         self.sensor = params.get('sensor')
@@ -49,19 +53,17 @@ def create_sensor_manager_yaml(params, save=False):
 
 
 def make_task(obj):
-    # start_measurement
-    # read_measured_values
-    # todo: set start_up_time ti 8 after dev work done
+    # todo: add desc
+    """add desc"""
     tasks = [{f'{obj.sensor}': {'task': 'start_measurement',
-                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 1}}},
+                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 8}}},
              {f'{obj.sensor}': {'task': 'read_measured_values',
                                 'measurement_samples': int(obj.samples),
                                 'measurement_rate': int(obj.rate),
                                 'measurement_amount': int(obj.amount),
                                 'method_parameters': {'mode': f'{obj.mode}'}}},
              {f'{obj.sensor}': {'task': 'stop_measurement'}}]
-    # stop_measurement
-    # REMOVE IF STATEMENT IF NO OTHER TYPES THAN ALL ARE IMPLEMENTED
+    # todo: REMOVE IF STATEMENT IF NO OTHER TYPES THAN ALL ARE IMPLEMENTED
     if obj.type == 'all':
         # split data and return only what is requested
         pass
@@ -78,6 +80,8 @@ def make_task(obj):
 
 
 def encode_base64(data):
+    # todo: add desc
+    """add desc"""
     # Encode data in base64
     to_string = json.dumps(data)
     to_bytes = str.encode(to_string)
@@ -87,6 +91,8 @@ def encode_base64(data):
 
 
 def decode_base64(data):
+    # todo: add desc
+    """add desc"""
     # Decode from base64
     to_bytes = base64.b64decode(data)
 

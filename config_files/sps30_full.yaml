@@ -1,5 +1,4 @@
 ---
-# https://stackoverflow.com/questions/35590381/input-yaml-config-values-into-keyword-arguments-for-python
 # Example Config Yaml File for the SensorManager Class found in sensor_manager.py
 # The sensors object contains all available sensors that the SensorManager Class can use.
 # Sps30 is functional and scd30 and svm30 are with as examples to illustrate how it might look.
@@ -25,10 +24,13 @@ tasks:
       measurement_samples: 30
       method_parameters:
         mode: float
+# Can only be run from idle mode
   - sps30:
       task: sleep
+# Can only be run from sleep mode
   - sps30:
       task: wake_up
+# Must be run after start_measurement is activated
   - sps30:
       task: start_fan_cleaning
   - sps30:
@@ -37,6 +39,7 @@ tasks:
         return_info: product_type
   - sps30:
       task: read_version
+# Must be run after start_measurement is activated
   - sps30:
       task: read_device_status_register
   - sps30:
