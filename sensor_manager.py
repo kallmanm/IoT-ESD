@@ -10,6 +10,7 @@ from sm_utils import utils as u
 
 
 class SensorManager:
+    # todo: fix desc
     def __init__(self, sensors, tasks):
         self.data = []
         for sensor in sensors:
@@ -30,6 +31,7 @@ class SensorManager:
 
     @staticmethod
     def return_timestamp():
+        # todo: fix desc
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
         return timestamp
 
@@ -39,6 +41,7 @@ class SensorManager:
                    measurement_rate=1,
                    measurement_amount=1,
                    method_parameters=None):
+        # todo: fix desc
 
         if task == 'start_measurement':
             return self.sps30.start_measurement(**method_parameters)
@@ -97,6 +100,7 @@ class SensorManager:
             return sensor_data
 
     def aggregate(self):
+        # todo: fix desc
         # aggregating keys
         keys = list(self.data['sensor-data'].keys())
         np_array_k = np.array(keys)
@@ -115,10 +119,12 @@ class SensorManager:
 
     @staticmethod
     def encrypt(self, data):
+        # todo: fix desc
         pass
 
     @staticmethod
     def encode_base64(data):
+        # todo: fix desc
         # Encode data in base64
         to_string = json.dumps(data)
         to_bytes = str.encode(to_string)
@@ -128,12 +134,14 @@ class SensorManager:
 
     @staticmethod
     def decode_base64(data):
+        # todo: fix desc
         # Decode from base64
         to_bytes = base64.b64decode(data)
 
         return json.loads(to_bytes)
 
     def do_tasks(self):
+        # todo: fix desc
         for index, task in enumerate(self.tasks):
             try:
                 if 'sps30' in task.keys():
@@ -177,6 +185,7 @@ class SensorManager:
                 self.log_data.append(msg)
 
 
+# todo: fix script part to be able to use either customer format or admin format.
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
