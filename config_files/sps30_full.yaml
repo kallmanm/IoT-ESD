@@ -6,13 +6,10 @@
 sensors:
   sps30:
     port: /dev/ttyUSB0
-    debug: True
   scd30:
     port: /dev/ttyUSB1
-    debug: False
   svm30:
     port: /dev/ttyUSB2
-    debug: False
 # The tasks object contains a list of operations that you wish the SensorManager Class to perform.
 # Inside each list element is a object with the name of the sensor that you want to perform a task. Sps30 is used
 # in this example.

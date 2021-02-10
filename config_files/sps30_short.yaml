@@ -3,7 +3,6 @@
 sensors:
   sps30:
     port: /dev/ttyUSB0
-    debug: True
 tasks:
   - sps30:
       task: device_information
