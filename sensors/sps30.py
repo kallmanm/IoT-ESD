@@ -11,9 +11,8 @@ import serial
 import struct
 import time
 
+
 # TODO: 1. add returns on all sensor methods
-# TODO: 2. add byte stuffing method
-# TODO: 3. fix byte unstuffing method
 # TODO: 4. fix debug outputs
 
 
@@ -53,51 +52,60 @@ class Sps30:
         # return ~sum(frame) & 0xFF
         return 0xFF - sum(list_of_bytes)
 
-    # TODO: add byte stuffing:
     # https://sensirion.github.io/python-shdlc-driver/_modules/sensirion_shdlc_driver/serial_frame_builder.html
-
-    def byte_unstuffing(self, data):
+    def byte_stuffing(self, frame):
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
-
-        if b'\x7D\x5E' in data:
-            data = data.replace(b'\x7D\x5E', b'\x7E')
-        if b'\x7D\x5D' in data:
-            data = data.replace(b'\x7D\x5D', b'\x7D')
-        if b'\x7D\x31' in data:
-            data = data.replace(b'\x7D\x31', b'\x11')
-        if b'\x7D\x33' in data:
-            data = data.replace(b'\x7D\x33', b'\x13')
-
-        return data
-
-    @staticmethod
-    def error_msg_check(byte):
         """
-        Datasheet 5.2: Table 6 Error Codes.
-        :param byte: byte
-        :return error_msg:
+            REWRITE IN OWN WORDS. USE THIS FORMAT
+                Perform byte-stuffing (escape reserved bytes).
+
+                :param bytearray data: The data without stuffed bytes.
+                :return: The data with stuffed bytes.
+                :rtype: bytearray
         """
+        new_frame = bytearray()
 
-        error_msg = ""
+        if b'\x7E' in frame:
+            frame = frame.replace(b'\x7E', b'\x7D\x5E')
+        if b'\x7D' in frame:
+            frame = frame.replace(b'\x7D', b'\x7D\x5D')
+        if b'\x11' in frame:
+            frame = frame.replace(b'\x11', b'\x7D\x31')
+        if b'\x13' in frame:
+            frame = frame.replace(b'\x13', b'\x7D\x33')
 
-        if byte == b'\x00':
-            error_msg = 'No error'
-        if byte == b'\x01':
-            error_msg = 'Wrong data length for this command (too much or little data)'
-        if byte == b'\x02':
-            error_msg = 'Unknown command'
-        if byte == b'\x03':
-            error_msg = 'No access right for command'
-        if byte == b'\x04':
-            error_msg = 'Illegal command parameter or parameter out of allowed range'
-        if byte == b'\x28':
-            error_msg = 'Internal function argument out of range'
-        if byte == b'\x43':
-            error_msg = 'Command not allowed in current state'
+        return frame
 
-        return error_msg
+    def undo_byte_stuffing(self, frame):
+        """
+        Datasheet 5.2: Table 5 for details on byte-unstuffing.
+        """
+        """
+        REWRITE IN OWN WORDS. USE THIS FORMAT
+                Undo byte-stuffing (replacing stuffed bytes by their original value).
+
+                :param bytearray stuffed_data: The data with stuffed bytes.
+                :return: The data without stuffed bytes.
+                :rtype: bytearray
+        """
+        new_frame = bytearray()
+
+        if b'\x7D\x5E' in frame:
+            frame = frame.replace(b'\x7D\x5E', b'\x7E')
+        if b'\x7D\x5D' in frame:
+            frame = frame.replace(b'\x7D\x5D', b'\x7D')
+        if b'\x7D\x31' in frame:
+            frame = frame.replace(b'\x7D\x31', b'\x11')
+        if b'\x7D\x33' in frame:
+            frame = frame.replace(b'\x7D\x33', b'\x13')
+
+        return frame
+
+    def bytearray_checker(self, array_to_check):
+        checked_bytearray = 0
+        return checked_bytearray
 
     def start_measurement(self, mode='float', start_up_time=30):
         """
@@ -117,13 +125,7 @@ class Sps30:
         self.ser.write(cmd)
 
         if self.debug:
-            print(f'Response Status start_measurement():')
-            raw_response = self.ser.read(7)
-            print(f'raw_response: {raw_response}')
-            response = self.byte_unstuffing(raw_response)
-            print(f'response: {response}')
-            error_msg = self.error_msg_check(response[3])
-            print(f'error_msg: {error_msg}')
+            pass
 
         time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
 
@@ -135,13 +137,7 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
 
         if self.debug:
-            print(f'Response Status stop_measurement():')
-            raw_response = self.ser.read(7)
-            print(f'raw_response: {raw_response}')
-            response = self.byte_unstuffing(raw_response)
-            print(f'response: {response}')
-            error_msg = self.error_msg_check(response[3])
-            print(f'error_msg: {error_msg}')
+            pass
 
     def read_measured_values(self, mode='float'):
         """
@@ -156,45 +152,38 @@ class Sps30:
         self.ser.reset_input_buffer()  # Clear input buffer to ensure no leftover data in stream.
         self.ser.write([0x7E, 0x00, 0x03, 0x00, 0xFC, 0x7E])
 
-        # TODO: fix while loop
-        #while True:
-        #    data_to_read = self.ser.in_waiting()
-        #    if len(self.ser.in_waiting()) >= stop_value:
-        #        break
-        #    time.sleep(0.1)
-        raw_data = self.ser.read(stop_value)
+        data_to_read = self.ser.inWaiting()  # Check to make sure bytestream is fully loaded
+        while data_to_read < stop_value:
+            data_to_read = self.ser.inWaiting()
+            time.sleep(0.1)
+        raw_data = self.ser.read(data_to_read)
 
-        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
 
         if self.debug:
-            print(f'Response Status read_measured_values():')
-            raw_response = self.ser.read(7)
-            print(f'raw_response: {raw_response}')
-            response = self.byte_unstuffing(raw_response)
-            print(f'response: {response}')
-            error_msg = self.error_msg_check(response[3])
-            print(f'error_msg: {error_msg}')
+            pass
 
         # Datasheet 5.2: Figure 4 MISO Frame.
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        start = unstuffed_raw_data[0]
+        adr = unstuffed_raw_data[1]
+        CMD = unstuffed_raw_data[2]
+        state = unstuffed_raw_data[3]
+        length  = unstuffed_raw_data[4]
+        CHK = unstuffed_raw_data[-2]
+        stop = unstuffed_raw_data[-1]
+        print(hex(start), hex(adr), hex(CMD), hex(state), hex(length), hex(CHK), hex(stop))
 
         if mode == 'integer':
             try:
-                data = struct.unpack(">iiiiiiiiii", rx_data)  # format = big-endian 10 integers
-            # TODO: improve error handling
-            except struct.error:
-                if self.debug:
-                    print(f'error in unpacking rx_data:\n{rx_data}')
-                data = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                data = struct.unpack(">HHHHHHHHHH", rx_data)  # format = big-endian 10 integers
+            except struct.error as e:
+                data = [f'Error in unpacking rx_data',rx_data,e]
         else:
             try:
                 data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
-            # TODO: improve error handling
             except struct.error as e:
-                print(e)
-                if self.debug:
-                    print(f'error in unpacking rx_data:\n{rx_data}')
-                data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                data = [f'Error in unpacking rx_data',rx_data,e]
 
         return data
 
@@ -207,10 +196,7 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
 
         if self.debug:
-            raw_response = self.ser.read(7)
-            response = self.byte_unstuffing(raw_response)
-            error_msg = self.error_msg_check(response[3])
-            print(f'Response Status sleep(): {error_msg}')
+            pass
 
     def wake_up(self):
         """
@@ -222,10 +208,7 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
 
         if self.debug:
-            raw_response = self.ser.read(7)
-            response = self.byte_unstuffing(raw_response)
-            error_msg = self.error_msg_check(response[3])
-            print(f'Response Status wake_up(): {error_msg}')
+            pass
 
     def start_fan_cleaning(self):
         """
@@ -236,10 +219,7 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
         if self.debug:
-            raw_response = self.ser.read(7)
-            response = self.byte_unstuffing(raw_response)
-            error_msg = self.error_msg_check(response[3])
-            print(f'Response Status start_fan_cleaning(): {error_msg}')
+            pass
 
     def read_write_auto_cleaning_interval(self):
         """
@@ -275,20 +255,19 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
 
-        #while True:
+        # while True:
         #    data_to_read = self.ser.in_waiting()
         #    if data_to_read >= stop_value:
         #        break
         #    time.sleep(0.1)
-        #raw_data = self.ser.read(data_to_read)
+        # raw_data = self.ser.read(data_to_read)
+
         raw_data = self.ser.read(stop_value)
 
-        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Unstuffing the raw_data.
 
         if self.debug:
-            error_flag = unstuffed_raw_data[3]
-            error_msg = self.error_msg_check(error_flag)
-            print(f'Response Status device_information(): {error_msg}')
+            pass
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
 
@@ -305,24 +284,17 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
 
-        while True:
-            data_to_read = self.ser.in_waiting()
-            if data_to_read >= stop_value:
-                break
-            time.sleep(0.1)
-        raw_data = self.ser.read(data_to_read)
+        raw_data = self.ser.read(stop_value)
 
-        unstuffed_raw_data = self.byte_unstuffing(raw_data)  # Unstuffing the raw_data.
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Unstuffing the raw_data.
 
         if self.debug:
-            error_flag = unstuffed_raw_data[3]
-            error_msg = self.error_msg_check(error_flag)
-            print(f'Response Status device_information(): {error_msg}')
+            pass
 
         rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
 
         try:
-            data = struct.unpack(">bbbbbbb", rx_data)  # format = big-endian 7  uint8 integers
+            data = struct.unpack(">BBBBBBB", rx_data)  # format = big-endian 7  uint8 integers
         except struct.error:
             data = "error in read_version fetch."
 
@@ -336,7 +308,17 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
         # TODO: add self.ser.read() functionality to read response.
-        # TODO: add self.debug check to confirm error status flag
+        stop_value = 12
+        raw_data = self.ser.read(stop_value)
+        print(raw_data)
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)
+
+        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        print(rx_data)
+        try:
+            data = struct.unpack(">LLLLB", rx_data)  # format = big-endian 7  uint8 integers
+        except struct.error:
+            data = "error in read_version fetch."
 
     def device_reset(self):
         """
@@ -347,10 +329,7 @@ class Sps30:
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
         if self.debug:
-            raw_response = self.ser.read(7)
-            response = self.byte_unstuffing(raw_response)
-            error_msg = self.error_msg_check(response[3])
-            print(f'Response Status device_reset(): {error_msg}')
+            pass
 
     def open_port(self):
         """
