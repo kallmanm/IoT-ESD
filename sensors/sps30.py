@@ -1,3 +1,4 @@
+# todo: fix licence
 """
     A python library for control of the Sensirion SPS30 Particulate Matter Sensor.
 
@@ -28,9 +29,6 @@ import struct
 import time
 
 
-# https://sensirion.github.io/python-shdlc-driver/_modules/sensirion_shdlc_driver/serial_frame_builder.html
-
-
 class Sps30:
     """
     Base class for sps30 sensor.
@@ -38,9 +36,9 @@ class Sps30:
 
     def __init__(self, port):
         """
-        Constructor method for Sps30.
+        Constructor method for Sps30 class.
 
-        :param port:
+        :param string port: Port address.
         """
         self.port = port
         self.ser = serial.Serial(self.port,
@@ -52,6 +50,7 @@ class Sps30:
 
     @staticmethod
     def calculate_checksum(list_of_bytes):
+        # todo: fix desc
         """
         The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
         The checksum is defined as follows:
@@ -66,6 +65,7 @@ class Sps30:
 
     @staticmethod
     def byte_stuffing(frame):
+        # todo: fix desc
         """
         Datasheet 5.2: Table 5 for details on byte-stuffing.
         """
@@ -92,6 +92,7 @@ class Sps30:
 
     @staticmethod
     def undo_byte_stuffing(frame):
+        # todo: fix desc
         """
         Datasheet 5.2: Table 5 for details on byte-unstuffing.
         """
@@ -117,6 +118,7 @@ class Sps30:
         return frame
 
     def read_data(self, _stop_value):
+        # todo: add desc
         """add desc"""
         data_to_read = self.ser.inWaiting()
         while data_to_read < _stop_value:
@@ -128,6 +130,7 @@ class Sps30:
 
     @staticmethod
     def segment_miso_frame(miso_frame):
+        # todo: fix desc
         """add desc"""
         start = miso_frame[0]
         adr = miso_frame[1]
@@ -141,6 +144,7 @@ class Sps30:
         return start, adr, cmd, state, length, rx_data, chk, stop
 
     def start_measurement(self, mode='float', start_up_time=30):
+        # todo: fix desc
         """
         Datasheet 5.3.1
         Measurement Output Format:
@@ -167,6 +171,7 @@ class Sps30:
         return data
 
     def stop_measurement(self):
+        # todo: fix desc
         """
         Datasheet 5.3.2
         """
@@ -181,6 +186,7 @@ class Sps30:
         return data
 
     def read_measured_values(self, mode='float'):
+        # todo: fix desc
         """
         Datasheet 5.3.3
         """
@@ -215,6 +221,7 @@ class Sps30:
         return data
 
     def sleep(self):
+        # todo: fix desc
         """
         Datasheet 5.3.4
         """
@@ -230,6 +237,7 @@ class Sps30:
         return data
 
     def wake_up(self):
+        # todo: fix desc
         """
         Datasheet 5.3.5
         """
@@ -246,6 +254,7 @@ class Sps30:
         return data
 
     def start_fan_cleaning(self):
+        # todo: fix desc
         """
         Datasheet 5.3.6
         """
@@ -274,6 +283,7 @@ class Sps30:
         return 'NOT IMPLEMENTED'
 
     def device_information(self, return_info='product_type'):
+        # todo: fix desc
         """
         Datasheet 5.3.8
         response info:
@@ -304,6 +314,7 @@ class Sps30:
         return data
 
     def read_version(self):
+        # todo: fix desc
         """
         Datasheet 5.3.9
         """
@@ -325,6 +336,7 @@ class Sps30:
         return data
 
     def read_device_status_register(self):
+        # todo: fix desc
         """
         Datasheet 5.3.10
         """
@@ -340,6 +352,7 @@ class Sps30:
         return data
 
     def device_reset(self):
+        # todo: fix desc
         """
         Datasheet 5.3.11
         """
@@ -355,6 +368,7 @@ class Sps30:
         return data
 
     def open_port(self):
+        # todo: fix desc
         """
         Opens a port connection.
         """
@@ -367,6 +381,7 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
 
     def close_port(self):
+        # todo: fix desc
         """
         Closes the port connection immediately.
         """
