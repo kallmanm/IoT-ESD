@@ -23,11 +23,6 @@ class Sps30:
     Datasheet 5.0: UART Interface settings.
     """
 
-    START_STOP_BYTE = 0x7E
-    ESCAPE_BYTE = 0x7D
-    ESCAPE_XOR = 0x20
-    CHARS_TO_ESCAPE = [START_STOP_BYTE, ESCAPE_BYTE, 0x11, 0x13]
-
     def __init__(self, port, debug=False):
         self.port = port
         self.ser = serial.Serial(self.port,
@@ -136,7 +131,7 @@ class Sps30:
         0x05: Big-endian unsigned 16-bit integer values
         Function default set to Big-endian IEEE754 float values.
         """
-
+        stop_value = 7
         # mode = float cmd
         cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x03, 0xF9, 0x7E]
 
@@ -145,20 +140,28 @@ class Sps30:
 
         self.ser.write(cmd)
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
 
-        time.sleep(start_up_time)  # Minimum time needed to boot up the sensor.
+        time.sleep(start_up_time)  # Minimum time needed to boot up the sensor. Range: 8 - 30 seconds.
+
+        return data
 
     def stop_measurement(self):
         """
         Datasheet 5.3.2
         """
-
+        stop_value = 7
         self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def read_measured_values(self, mode='float'):
         """
@@ -198,48 +201,60 @@ class Sps30:
         """
         Datasheet 5.3.4
         """
-
+        stop_value = 7
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def wake_up(self):
         """
         Datasheet 5.3.5
         """
-
+        stop_value = 7
         self.ser.reset_input_buffer()
         self.ser.write([0xFF])
         self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def start_fan_cleaning(self):
         """
         Datasheet 5.3.6
         """
-
+        stop_value = 7
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def read_write_auto_cleaning_interval(self):
         """
         Datasheet 5.3.7
         """
 
-        # TODO: Review code and method
-        self.ser.reset_input_buffer()
+        # self.ser.reset_input_buffer()
         # Read Auto Cleaning Interval:
-        self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
+        # self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
         # Write Auto Cleaning Interval to 0 (disable):
         # Disabled, use with caution.
         # self.ser.write([0x7E, 0x00, 0x80, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x7E])
+        return 'NOT IMPLEMENTED'
 
     def device_information(self, return_info='product_type'):
         """
@@ -262,21 +277,10 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
 
-        # while True:
-        #    data_to_read = self.ser.in_waiting()
-        #    if data_to_read >= stop_value:
-        #        break
-        #    time.sleep(0.1)
-        # raw_data = self.ser.read(data_to_read)
-
-        raw_data = self.ser.read(stop_value)
-
-        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Unstuffing the raw_data.
-
-        if self.debug:
-            pass
-
-        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        raw_data = self.ser.read(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        start, adr, cmd, state, length, rx_data, chk, stop = self.segment_miso_frame(unstuffed_raw_data)
 
         data = rx_data.decode('ascii')
 
@@ -291,19 +295,15 @@ class Sps30:
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
 
-        raw_data = self.ser.read(stop_value)
-
-        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Unstuffing the raw_data.
-
-        if self.debug:
-            pass
-
-        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        start, adr, cmd, state, length, rx_data, chk, stop = self.segment_miso_frame(unstuffed_raw_data)
 
         try:
             data = struct.unpack(">BBBBBBB", rx_data)  # format = big-endian 7  uint8 integers
-        except struct.error:
-            data = "error in read_version fetch."
+        except struct.error as e:
+            data = e
 
         return data
 
@@ -311,32 +311,31 @@ class Sps30:
         """
         Datasheet 5.3.10
         """
-
+        stop_value = 12
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
-        # TODO: add self.ser.read() functionality to read response.
-        stop_value = 12
-        raw_data = self.ser.read(stop_value)
-        print(raw_data)
-        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)
 
-        rx_data = unstuffed_raw_data[5:-2]  # Removing header and tail bits.
-        print(rx_data)
-        try:
-            data = struct.unpack(">LLLLB", rx_data)  # format = big-endian 7  uint8 integers
-        except struct.error:
-            data = "error in read_version fetch."
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def device_reset(self):
         """
         Datasheet 5.3.11
         """
-
+        stop_value = 7
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
-        if self.debug:
-            pass
+        raw_data = self.read_data(stop_value)  # MISO
+        unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+        # Segmenting the MISO Frame.
+        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        return data
 
     def open_port(self):
         """
