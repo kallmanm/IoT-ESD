@@ -7,13 +7,17 @@
     https://www.sensirion.com/en/download-center/
     search: sps30, download: Datasheet Particulate Matter Sensors SPS30
 
-    Datasheet Version 1.0 – D1 – March 2020 used in the development of this library.
+    Datasheet Version '1.0 – D1 – March 2020' used in the development of this library.
     Downloaded on 8.1.2021.
 
     by
     Mattias Kallman
     Github: @kallmanm
     LinkedIn: www.linkedin.com/in/mattias-kallman
+
+    <insert copyright notice>
+
+    <insert LICENSE>
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,13 +27,6 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
-"""
-<COMMENT>
-
-:param type name: desc
-:return type name: desc
-
-"""
 
 import serial
 import struct
@@ -38,7 +35,7 @@ import time
 
 class Sps30:
     """
-    Base class for sps30 sensor.
+    Base class for Sensirion Sps30 Particulate Matter Sensor.
     """
 
     def __init__(self, port):
@@ -57,14 +54,17 @@ class Sps30:
 
     @staticmethod
     def calculate_checksum(list_of_bytes):
-        # todo: fix desc
         """
-        The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
+        Method to calculate the checksum.
+
+        Description of how to calculate the checksum. ref: Datasheet 5.2 Checksum.
+        ' The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
         The checksum is defined as follows:
-        1. Sum all bytes between start and stop (without start and stop bytes).
-        2. Take the least significant byte of the result and invert it. This will be the checksum.
+            1. Sum all bytes between start and stop (without start and stop bytes).
+            2. Take the least significant byte of the result and invert it. This will be the checksum.
         For a MOSI frame use Address, Command, Length and Data to calculate the checksum.
-        For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.
+        For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.'
+
         :param bytearray list_of_bytes:
         :return byte:
         """
@@ -72,17 +72,16 @@ class Sps30:
 
     @staticmethod
     def byte_stuffing(frame):
-        # todo: fix desc
+        #TODO: fix
         """
-        Datasheet 5.2: Table 5 for details on byte-stuffing.
-        """
-        """
-            REWRITE IN OWN WORDS. USE THIS FORMAT
-                Perform byte-stuffing (escape reserved bytes).
+        Method for doing byte-stuffing on a bytearray.
 
-                :param bytearray data: The data without stuffed bytes.
-                :return bytearray frame: The data with stuffed bytes.
+        Datasheet 5.2: Table 5 for details on byte-stuffing.
+
+        :param bytearray frame: The data without stuffed bytes.
+        :return bytearray new_frame: The data with stuffed bytes.
         """
+
         new_frame = bytearray()
 
         if b'\x7E' in frame:
