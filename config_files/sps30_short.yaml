@@ -15,8 +15,6 @@ tasks:
   - sps30:
       task: read_version
   - sps30:
-      task: read_device_status_register
-  - sps30:
       task: device_reset
   - sps30:
       task: close_port

@@ -41,6 +41,7 @@ class SensorManager:
         self.encoded_data = ''
         self.data['device-name'] = self.get_device_name()
         self.data['serial-number'] = self.get_serial_number()
+        # todo: add location to data.
         self.data['start-time'] = self.return_timestamp()
         self.data['stop-time'] = ''
         self.do_tasks()
