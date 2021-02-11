@@ -10,7 +10,7 @@ print(f'Device port set to: {device_port}\n')
 
 print(f'******************')
 
-sensor_sps30 = sps30.Sps30(device_port, debug=True)
+sensor_sps30 = sps30.Sps30(device_port)
 
 print(f'Sps30 __init__(): {sensor_sps30.ser.is_open}\n')
 
