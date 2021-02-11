@@ -10,6 +10,7 @@ from sm_utils import utils as u
 
 
 class SensorManager:
+    # todo: fix
     """
     <COMMENT>
 
@@ -18,6 +19,7 @@ class SensorManager:
 
     """
     def __init__(self, sensors, tasks):
+        # todo: fix
         """
         <COMMENT>
 
@@ -45,7 +47,6 @@ class SensorManager:
 
     @staticmethod
     def return_timestamp():
-        # todo: fix desc
         """
         Gets and returns the current local time.
 
@@ -131,12 +132,12 @@ class SensorManager:
             return sensor_data
 
     def aggregate(self):
-        # todo: fix desc
         """
-        <COMMENT>
+        Method that aggregates collected sensor data.
 
-        :param type name: desc
-        :return type name: desc
+        Aggregates and divides upp data by self.measurement_amount attribute.
+
+        :return dict aggregated_dic: data structured by key/value pairs.
         """
 
         # aggregating keys
@@ -156,12 +157,12 @@ class SensorManager:
         return aggregated_dict
 
     @staticmethod
-    def encrypt(self, data):
+    def encrypt(data):
         # todo: fix desc
         """
         <COMMENT>
 
-        :param type name: desc
+        :param type data: desc
         :return type name: desc
         """
         pass
@@ -254,6 +255,8 @@ class SensorManager:
         :return type name: desc
         """
         product_type = self.sps30.device_information(return_info='product_type')
+        print(product_type)
+        print('00080000')
         if product_type == '00080000':
             return 'Sensirion SPS30 Particulate Matter Sensor'
         else:

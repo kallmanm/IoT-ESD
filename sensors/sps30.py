@@ -37,7 +37,6 @@ class Sps30:
     """
     Base class for Sensirion Sps30 Particulate Matter Sensor.
     """
-
     def __init__(self, port):
         """
         Constructor method for Sps30 class.
@@ -72,7 +71,6 @@ class Sps30:
 
     @staticmethod
     def byte_stuffing(frame):
-        #TODO: fix
         """
         Method for doing byte-stuffing on a bytearray.
 
@@ -81,7 +79,7 @@ class Sps30:
         :param bytearray frame: The data without stuffed bytes.
         :return bytearray new_frame: The data with stuffed bytes.
         """
-
+        # todo: fix
         new_frame = bytearray()
 
         if b'\x7E' in frame:
@@ -97,18 +95,15 @@ class Sps30:
 
     @staticmethod
     def undo_byte_stuffing(frame):
-        # todo: fix desc
         """
-        Datasheet 5.2: Table 5 for details on byte-unstuffing.
-        """
-        """
-        REWRITE IN OWN WORDS. USE THIS FORMAT
-        Undo byte-stuffing (replacing stuffed bytes by their original value).
+        Method for undoing byte-stuffing on a bytearray.
 
-        :param bytearray stuffed_data: The data with stuffed bytes.
-        :return: The data without stuffed bytes.
-        :rtype: bytearray
+        Datasheet 5.2: Table 5 for details on byte-unstuffing.
+
+        :param bytearray frame: The data with stuffed bytes.
+        :return bytearray new_frame: The data with unstuffed bytes.
         """
+        # todo: fix
         new_frame = bytearray()
 
         if b'\x7D\x5E' in frame:
@@ -123,8 +118,12 @@ class Sps30:
         return frame
 
     def read_data(self, _stop_value):
-        # todo: add desc
-        """add desc"""
+        """
+        Method for reading MISO data.
+
+        :param int _stop_value: the expected number of bytes to read.
+        :return bytearray data:
+        """
         data_to_read = self.ser.inWaiting()
         while data_to_read < _stop_value:
             data_to_read = self.ser.inWaiting()
@@ -135,8 +134,12 @@ class Sps30:
 
     @staticmethod
     def segment_miso_frame(miso_frame):
-        # todo: fix desc
-        """add desc"""
+        """
+        Method that segments MISO dataframe.
+
+        :param bytearray miso_frame:
+        :return: the segmented data.
+        """
         start = miso_frame[0]
         adr = miso_frame[1]
         cmd = miso_frame[2]
@@ -151,11 +154,13 @@ class Sps30:
     def start_measurement(self, mode='float', start_up_time=30):
         # todo: fix desc
         """
-        Datasheet 5.3.1
-        Measurement Output Format:
-        0x03: Big-endian IEEE754 float values
-        0x05: Big-endian unsigned 16-bit integer values
-        Function default set to Big-endian IEEE754 float values.
+        Activates Sensor start measurement command.
+
+        Datasheet 5.3.1 for reference.
+
+        :param string mode: 'float' or 'integer'.
+        :param integer start_up_time: values between 8-30 are acceptable.
+        :return: sensor data.
         """
         stop_value = 7
         # mode = float cmd
