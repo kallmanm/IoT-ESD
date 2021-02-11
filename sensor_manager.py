@@ -265,10 +265,12 @@ class SensorManager:
         """
         <COMMENT>
 
-        :param type name: desc
         :return type name: desc
         """
-        return self.sps30.device_information(return_info='serial_number')
+        serial_number = self.sps30.device_information(return_info='serial_number')
+        if serial_number.endswith('\x00'):
+            serial_number = serial_number.replace('\x00', '')
+        return serial_number
 
 
 # todo: fix script part to be able to use either customer format or admin format.
