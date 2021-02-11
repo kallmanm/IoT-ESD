@@ -24,7 +24,8 @@ class SensorManager:
         self.measurement_rate = 0
         self.measurement_amount = 0
         self.encoded_data = ''
-        # TODO: add device info; name and serial
+        self.data['device-name'] = self.get_device_name()
+        self.data['serial-number'] = self.get_serial_number()
         self.data['start-time'] = self.return_timestamp()
         self.data['stop-time'] = ''
         self.do_tasks()
@@ -183,6 +184,16 @@ class SensorManager:
             except AttributeError as e:
                 msg = f'Error in task:{task} - ErrorMessage:{e}'
                 self.log_data.append(msg)
+
+    def get_device_name(self):
+        product_type = self.sps30.device_information(return_info='product_type')
+        if product_type == '00080000':
+            return 'Sensirion SPS30 Particulate Matter Sensor'
+        else:
+            return 'Unknown Sensor Type'
+
+    def get_serial_number(self):
+        return self.sps30.device_information(return_info='serial_number')
 
 
 # todo: fix script part to be able to use either customer format or admin format.
