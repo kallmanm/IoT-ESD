@@ -255,9 +255,8 @@ class SensorManager:
         :return type name: desc
         """
         product_type = self.sps30.device_information(return_info='product_type')
-        print(repr(product_type))
-        print(repr('00080000'))
-        if product_type == '00080000':
+
+        if product_type == '00080000\x00':
             return 'Sensirion SPS30 Particulate Matter Sensor'
         else:
             return 'Unknown Sensor Type'
