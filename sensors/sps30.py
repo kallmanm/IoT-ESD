@@ -23,6 +23,13 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
+"""
+<COMMENT>
+
+:param type name: desc
+:return type name: desc
+
+"""
 
 import serial
 import struct
@@ -59,7 +66,7 @@ class Sps30:
         For a MOSI frame use Address, Command, Length and Data to calculate the checksum.
         For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.
         :param bytearray list_of_bytes:
-        :return checksum byte:
+        :return byte:
         """
         return 0xFF - sum(list_of_bytes)
 
@@ -74,8 +81,7 @@ class Sps30:
                 Perform byte-stuffing (escape reserved bytes).
 
                 :param bytearray data: The data without stuffed bytes.
-                :return: The data with stuffed bytes.
-                :rtype: bytearray
+                :return bytearray frame: The data with stuffed bytes.
         """
         new_frame = bytearray()
 

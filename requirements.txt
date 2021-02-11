@@ -1,5 +1,5 @@
 # todo: add all dependencies
-numpy
+numpy==1.20.0
 PyYAML==5.3.1
 self==0.0.0
 serial==0.0.97

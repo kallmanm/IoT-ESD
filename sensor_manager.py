@@ -10,8 +10,21 @@ from sm_utils import utils as u
 
 
 class SensorManager:
-    # todo: fix desc
+    """
+    <COMMENT>
+
+    :param type name: desc
+    :return type name: desc
+
+    """
     def __init__(self, sensors, tasks):
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+
+        """
         self.data = []
         for sensor in sensors:
             if 'sps30' in sensor:
@@ -33,6 +46,11 @@ class SensorManager:
     @staticmethod
     def return_timestamp():
         # todo: fix desc
+        """
+        Gets and returns the current local time.
+
+        :return string timestamp: Current local time in format %Y-%m-%d %H:%M:%S %Z.
+        """
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
         return timestamp
 
@@ -43,6 +61,18 @@ class SensorManager:
                    measurement_amount=1,
                    method_parameters=None):
         # todo: fix desc
+        # todo: ask john about naming convention for sample, rate and amount...
+        """
+        Performs the requested sps30 command.
+
+        :param string task: the task to perform.
+        :param measurement_samples:
+        :param measurement_rate:
+        :param method_parameters:
+        :param measurement_amount:
+        :return: The data from called method.
+
+        """
 
         if task == 'start_measurement':
             return self.sps30.start_measurement(**method_parameters)
@@ -102,6 +132,13 @@ class SensorManager:
 
     def aggregate(self):
         # todo: fix desc
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
+
         # aggregating keys
         keys = list(self.data['sensor-data'].keys())
         np_array_k = np.array(keys)
@@ -121,11 +158,23 @@ class SensorManager:
     @staticmethod
     def encrypt(self, data):
         # todo: fix desc
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         pass
 
     @staticmethod
     def encode_base64(data):
         # todo: fix desc
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         # Encode data in base64
         to_string = json.dumps(data)
         to_bytes = str.encode(to_string)
@@ -136,6 +185,12 @@ class SensorManager:
     @staticmethod
     def decode_base64(data):
         # todo: fix desc
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         # Decode from base64
         to_bytes = base64.b64decode(data)
 
@@ -143,6 +198,12 @@ class SensorManager:
 
     def do_tasks(self):
         # todo: fix desc
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         for index, task in enumerate(self.tasks):
             try:
                 if 'sps30' in task.keys():
@@ -186,6 +247,12 @@ class SensorManager:
                 self.log_data.append(msg)
 
     def get_device_name(self):
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         product_type = self.sps30.device_information(return_info='product_type')
         if product_type == '00080000':
             return 'Sensirion SPS30 Particulate Matter Sensor'
@@ -193,6 +260,12 @@ class SensorManager:
             return 'Unknown Sensor Type'
 
     def get_serial_number(self):
+        """
+        <COMMENT>
+
+        :param type name: desc
+        :return type name: desc
+        """
         return self.sps30.device_information(return_info='serial_number')
 
 
