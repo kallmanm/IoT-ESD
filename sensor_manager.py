@@ -7,8 +7,8 @@ import json
 import numpy as np
 import yaml
 import argparse
-import app_utils.utils as u
-import sps30_driver.sps30 as sps30
+import sm_utils.utils as u
+import sensors.sps30 as sps30
 # TODO: Add encrypt function
 
 

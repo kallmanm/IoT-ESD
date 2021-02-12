@@ -1,6 +1,6 @@
 ---
 # Example Config Yaml File for the SensorManager Class found in sensor_manager.py
-# The sps30_driver object contains all available sps30_driver that the SensorManager Class can use.
+# The sensors object contains all available sensors that the SensorManager Class can use.
 # Sps30 is functional and scd30 and svm30 are with as examples to illustrate how it might look.
 sensors:
   sps30:
