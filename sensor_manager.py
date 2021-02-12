@@ -5,7 +5,7 @@ import time
 import base64
 import json
 import numpy as np
-from sps30_driver.sps30 import Sps30
+from sps30_driver import sps30
 # TODO: Add encrypt function
 
 
@@ -30,7 +30,7 @@ class SensorManager:
         self.data = []
         for sensor in sensors:
             if 'sps30' in sensor:
-                self.sps30 = Sps30(**sensors[sensor])
+                self.sps30 = sps30.Sps30(**sensors[sensor])
         self.sensors = sensors
         self.tasks = tasks
         self.data = {}
