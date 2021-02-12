@@ -1,19 +1,42 @@
+# todo: fix licence
 """
-    A Python interface implementing the sps30 sensor library
+    A Python interface implementing the sps30 sensor library.
+
+    The interface allows you to control and issue commands to the selected sensor via a json object.
+    See sensor_manager_cli.py for example implementation.
+
+    by
+    Mattias Kallman
+    Github: @kallmanm
+    LinkedIn: www.linkedin.com/in/mattias-kallman
+
+    <insert copyright notice>
+
+    <insert LICENSE>
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 """
 import time
 import base64
 import json
 import numpy as np
-import yaml
-import argparse
-import sm_utils.utils as u
 import sensors.sps30 as sps30
 
 
 class SensorManager:
     """
-    SensorManager Class controls and performs the sensor operations according to given instructions.
+    SensorManager Class controls and performs the sensor operations according to given json instructions.
+
+    When The SensorManager Class is instantiated it takes in as kwargs 'sensors' and 'tasks'. As the
+    constructor is instantiating it reads in the sensor information and opens a connection to given
+    sensors. After that all key attributes are instantiated and finally the do_tasks() method is run
+    that performs the sensor operations.
     """
     def __init__(self, sensors, tasks):
         """
@@ -258,3 +281,11 @@ class SensorManager:
         if serial_number.endswith('\x00'):
             serial_number = serial_number.replace('\x00', '')
         return serial_number
+
+    def save_to_json(self):
+        # TODO: implement
+        pass
+
+    def save_to_json(self):
+        # TODO: implement
+        pass
