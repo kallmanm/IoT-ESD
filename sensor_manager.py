@@ -5,9 +5,10 @@ import time
 import base64
 import json
 import numpy as np
-from sps30_driver import sps30
 import yaml
 import argparse
+import app_utils.utils as u
+from sps30_driver import sps30
 # TODO: Add encrypt function
 
 
