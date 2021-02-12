@@ -237,7 +237,7 @@ class Sps30:
                 data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
             except struct.error as e:
                 data = [f'Error in unpacking rx_data', rx_data, e]
-
+        # TODO : add round() on data.
         return data
 
     def sleep(self):
