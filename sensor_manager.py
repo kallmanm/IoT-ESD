@@ -179,17 +179,46 @@ class SensorManager:
         return aggregated_dict
 
     @staticmethod
-    def encrypt(data):
+    def encrypt(data, public_key):
         """
         Method that encrypts data.
 
         :param data: Data to encrypt.
-        :return encrypted_data: The encrypted data.
+        :param public_key: Public key used to encrypt data.
+        :return encrypted_data: Data that has been encrypted.
         """
+        # PUBLIC KEY TO ENCRYPT
+
+        #  PYTHON LIB FOR ENCRYPTION
+        #  https://cryptography.io/en/latest/
+
+        #  GENERAL INFO ON ENCRYPTION
+        #  https://en.wikipedia.org/wiki/Public-key_cryptography
+
+        #  SYMMETRIC EXAMPLE
+        #  https://devqa.io/encrypt-decrypt-data-python/
+
+        #  ASYMMETRIC EXAMPLE
+        #  https://towardsdatascience.com/asymmetric-encrypting-of-sensitive-data-in-memory-python-e20fdebc521c
+
         encrypted_data = data
-        # todo: add functionality
+        # todo: add ENCRYPTION function
 
         return encrypted_data
+
+    @staticmethod
+    def decrypt(data, private_key):
+        """
+        Method that decrypts data.
+
+        :param data: The encrypted data.
+        :param private_key: The private key used to decrypt the data.
+        :return decrypted_data: Data that has been decrypted.
+        """
+        # PRIVATE TO DECRYPT
+        decrypted_data = data
+
+        return decrypted_data
 
     @staticmethod
     def encode_base64(data):
