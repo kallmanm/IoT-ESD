@@ -72,6 +72,7 @@ class SensorManager:
         :return string timestamp: Current local time in format %Y-%m-%d %H:%M:%S %Z.
         """
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+
         return timestamp
 
     def sps30_task(self,
@@ -101,6 +102,7 @@ class SensorManager:
             self.measurement_rate = measurement_rate
             self.measurement_amount = measurement_amount
             sensor_data = {}
+
             for amount in range(measurement_amount):
                 for sample in range(measurement_samples):
                     sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(**method_parameters)
@@ -109,6 +111,7 @@ class SensorManager:
                     # TODO: change time.sleep to 60 when done with dev
                     # time.sleep(60 * measurement_rate - measurement_samples)
                     time.sleep(0.1)
+
             return sensor_data
 
         elif task == 'stop_measurement':
@@ -158,18 +161,19 @@ class SensorManager:
         :return dict aggregated_dic: data structured by key/value pairs.
         """
 
-        # aggregating keys
+        # Aggregating keys
         keys = list(self.data['sensor-data'].keys())
         np_array_k = np.array(keys)
         split_array_k = np.array(np.array_split(np_array_k, self.measurement_amount))
         aggregated_keys = [k[-1].tolist() for k in split_array_k]
 
-        # aggregating values
+        # Aggregating values
         values = list(self.data['sensor-data'].values())
         np_array_v = np.array(values)
         split_array_v = np.array(np.array_split(np_array_v, self.measurement_amount))
         aggregated_values = [v.mean(axis=0).tolist() for v in split_array_v]
 
+        # Structure into dict
         aggregated_dict = {key: value for (key, value) in zip(aggregated_keys, aggregated_values)}
 
         return aggregated_dict
@@ -184,6 +188,7 @@ class SensorManager:
         """
         encrypted_data = data
         # todo: add functionality
+
         return encrypted_data
 
     @staticmethod
@@ -206,11 +211,12 @@ class SensorManager:
         decodes from base64.
 
         :param  string data:
-        :return: dict object.
+        :return json_obj: dict object.
         """
         to_bytes = base64.b64decode(data)
+        json_obj = json.loads(to_bytes)
 
-        return json.loads(to_bytes)
+        return json_obj
 
     def do_tasks(self):
         """
@@ -218,6 +224,8 @@ class SensorManager:
 
         Saves the tasks results in self.data and self.log_data.
         """
+        # If a new task is created it needs to also be added in the try/except within the for loop,
+        # otherwise do_tasks() won't be able to interpret the command.
         for index, task in enumerate(self.tasks):
             try:
                 if 'sps30' in task.keys():
@@ -261,8 +269,9 @@ class SensorManager:
         """
         Fetches the sensors device name.
 
-        :param type name: desc
-        :return type name: desc
+        Currently only configured to fetch data from sps30 sensor.
+
+        :return type name: the device name.
         """
         product_type = self.sps30.device_information(return_info='product_type')
 
@@ -273,9 +282,11 @@ class SensorManager:
 
     def get_serial_number(self):
         """
-        <COMMENT>
+        Fetches the sensors device serial number.
 
-        :return type name: desc
+        Currently only configured to fetch data from sps30 sensor.
+
+        :return string serial_number: the device serial number.
         """
         serial_number = self.sps30.device_information(return_info='serial_number')
         if serial_number.endswith('\x00'):
