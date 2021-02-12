@@ -79,9 +79,6 @@ class Sps30:
         :param bytearray frame: The data without stuffed bytes.
         :return bytearray new_frame: The data with stuffed bytes.
         """
-        # todo: fix
-        new_frame = bytearray()
-
         if b'\x7E' in frame:
             frame = frame.replace(b'\x7E', b'\x7D\x5E')
         if b'\x7D' in frame:
@@ -103,9 +100,6 @@ class Sps30:
         :param bytearray frame: The data with stuffed bytes.
         :return bytearray new_frame: The data with unstuffed bytes.
         """
-        # todo: fix
-        new_frame = bytearray()
-
         if b'\x7D\x5E' in frame:
             frame = frame.replace(b'\x7D\x5E', b'\x7E')
         if b'\x7D\x5D' in frame:

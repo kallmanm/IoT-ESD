@@ -1,3 +1,5 @@
+# add description and comments
+
 from sensor_manager import SensorManager
 from sm_utils import utils as u
 import yaml
