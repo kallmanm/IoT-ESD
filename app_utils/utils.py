@@ -42,7 +42,7 @@ def create_sensor_manager_yaml(params, save=False):
     cty: CustomerTaskYaml = CustomerTaskYaml(params)
     # TODO: modify data
     new_data = {
-        'app': {f'{cty.sensor}': {'port': '/dev/ttyUSB0'}},
+        'sps30_driver': {f'{cty.sensor}': {'port': '/dev/ttyUSB0'}},
         'tasks': make_task(cty)
     }
     if save:

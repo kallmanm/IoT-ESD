@@ -7,7 +7,7 @@ import random
 import base64
 import json
 import numpy as np
-from app import utils as u
+from app_utils import utils as u
 
 
 class Sps30Mock:

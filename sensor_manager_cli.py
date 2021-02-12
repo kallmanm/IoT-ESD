@@ -1,7 +1,7 @@
 # add description and comments
 
 from sensor_manager import SensorManager
-import app.utils as u
+import app_utils.utils as u
 import yaml
 import argparse
 
