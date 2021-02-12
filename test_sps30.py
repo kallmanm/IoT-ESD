@@ -1,7 +1,7 @@
 """
 Test script for Sps30 class testing that all class functionality is working.
 """
-from sensors import sps30
+from app import sps30
 import time
 
 device_port = "/dev/ttyUSB0"
