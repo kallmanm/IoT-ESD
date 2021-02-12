@@ -1,5 +1,4 @@
-# todo: add desc
-"""add desc"""
+"""Mock Class of sensor_manager.SensorManager and sps30.Sps30"""
 import yaml
 import argparse
 import time
@@ -148,8 +147,7 @@ class SensorManagerMock:
                     sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(**method_parameters)
                     time.sleep(1)  # SPS30 needs 1 second between measurements.
                 if amount < measurement_amount - 1:
-                    # TODO: change time.sleep to 60 when done with dev
-                    # time.sleep(60 * measurement_rate - measurement_samples)
+                    # changed time.sleep to speed up development
                     time.sleep(0.1)
             return sensor_data
 
@@ -250,15 +248,10 @@ class SensorManagerMock:
                 elif 'svm30' in task.keys():
                     msg = 'NOT IMPLEMENTED: svm30 task'
                     self.log_data.append(msg)
-                elif 'send_data' in task.keys():
-                    # TODO: update SEND
-                    msg = 'data sent!'
-                    self.log_data.append(msg)
                 elif 'aggregate' in task.keys():
                     self.data['sensor-data'] = self.aggregate()
                     self.log_data.append('data aggregated')
                 elif 'encrypt' in task.keys():
-                    # todo: update ENCRYPT
                     msg = 'data encrypted'
                     self.log_data.append(msg)
                 elif 'encode' in task.keys():
