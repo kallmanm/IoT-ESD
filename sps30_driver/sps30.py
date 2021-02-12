@@ -57,7 +57,7 @@ class Sps30:
         Method to calculate the checksum.
 
         Description of how to calculate the checksum. ref: Datasheet 5.2 Checksum.
-        'The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
+        ' The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame.
         The checksum is defined as follows:
             1. Sum all bytes between start and stop (without start and stop bytes).
             2. Take the least significant byte of the result and invert it. This will be the checksum.
