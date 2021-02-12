@@ -417,9 +417,12 @@ class Sps30:
         return data
 
     def device_reset(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.11
+        Activates sensor read device status register command.
+
+        Datasheet 5.3.11 for reference.
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
 
