@@ -6,24 +6,16 @@ import json
 import base64
 
 
-def calculate_checksum(bytearray):
-    # todo: add desc
-    """add desc"""
-    """
-    The checksum is built before byte-stuffing and checked after removing stuffed bytes from the frame. The checksum
-    is defined as follows:
-    1. Sum all bytes between start and stop (without start and stop bytes).
-    2. Take the least significant byte of the result and invert it. This will be the checksum.
-    For a MOSI frame use Address, Command, Length and Data to calculate the checksum.
-    For a MISO frame use Address, Command, State, Length and Data to calculate the checksum.
-    """
-    return 0xFF - sum(bytearray)
-
-
 class CustomerTaskYaml:
-    # todo: add desc
-    """add desc"""
+    """
+    Maps customer yaml to CustomerTaskYaml object.
+    """
     def __init__(self, params):
+        """
+        Constructor for CustomerTaskYaml.
+
+        :param params: data structure.
+        """
         self.params = params
         self.sensor = params.get('sensor')
         self.type = params.get('type')
@@ -36,11 +28,15 @@ class CustomerTaskYaml:
 
 
 def create_sensor_manager_yaml(params, save=False):
-    # TODO: ADD SUPPORT FOR JSON
-    #with open(input_yaml) as f:
-    #    data = yaml.load(f, Loader=yaml.FullLoader)
+    """
+    Maps customer yaml file to sensor_manager yaml format.
+
+    :param params: Customer data structure
+    :param save: True if save to yaml file
+    :return new_data: sensor_manager data structure.
+    """
     cty: CustomerTaskYaml = CustomerTaskYaml(params)
-    # TODO: modify data
+
     new_data = {
         'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0'}},
         'tasks': make_task(cty)
@@ -53,8 +49,11 @@ def create_sensor_manager_yaml(params, save=False):
 
 
 def make_task(obj):
-    # todo: add desc
-    """add desc"""
+    """
+
+    :param obj: CustomerTaskYaml object as input.
+    :return tasks: Returns tasks in correct format for sensor_manager.
+    """
     tasks = [{f'{obj.sensor}': {'task': 'start_measurement',
                                 'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 8}}},
              {f'{obj.sensor}': {'task': 'read_measured_values',
@@ -80,8 +79,12 @@ def make_task(obj):
 
 
 def encode_base64(data):
-    # todo: add desc
-    """add desc"""
+    """
+    Encodes into base64.
+
+    :param dict data:
+    :return: encoded base64 string.
+    """
     # Encode data in base64
     to_string = json.dumps(data)
     to_bytes = str.encode(to_string)
@@ -91,8 +94,12 @@ def encode_base64(data):
 
 
 def decode_base64(data):
-    # todo: add desc
-    """add desc"""
+    """
+    decodes from base64.
+
+    :param  string data:
+    :return: dict object.
+    """
     # Decode from base64
     to_bytes = base64.b64decode(data)
 

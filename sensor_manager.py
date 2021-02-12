@@ -9,26 +9,18 @@ import yaml
 import argparse
 import sm_utils.utils as u
 import sensors.sps30 as sps30
-# TODO: Add encrypt function
 
 
 class SensorManager:
-    # todo: fix
     """
-    <COMMENT>
-
-    :param type name: desc
-    :return type name: desc
-
+    SensorManager Class controls and performs the sensor operations according to given instructions.
     """
     def __init__(self, sensors, tasks):
-        # todo: fix
         """
-        <COMMENT>
+        Constructor for SensorManager Class.
 
-        :param type name: desc
-        :return type name: desc
-
+        :param sensors: Sensors information.
+        :param tasks:  Tasks to perform with Sensors.
         """
         self.data = []
         for sensor in sensors:
@@ -65,16 +57,15 @@ class SensorManager:
                    measurement_rate=1,
                    measurement_amount=1,
                    method_parameters=None):
-        # todo: fix desc
         # todo: ask john about naming convention for sample, rate and amount...
         """
         Performs the requested sps30 command.
 
         :param string task: the task to perform.
-        :param measurement_samples:
-        :param measurement_rate:
-        :param method_parameters:
-        :param measurement_amount:
+        :param measurement_samples: The amount of samples to take per measurement_amount.
+        :param measurement_rate: The rate at which to space the measurements. 1-5 min.
+        :param method_parameters: Dict object containing necessary parameters to perform tasks.
+        :param measurement_amount: Total amount of measurements to be done.
         :return: The data from called method.
 
         """
@@ -162,25 +153,24 @@ class SensorManager:
 
     @staticmethod
     def encrypt(data):
-        # todo: fix desc
         """
-        <COMMENT>
+        Method that encrypts data.
 
-        :param type data: desc
-        :return type name: desc
+        :param data: Data to encrypt.
+        :return encrypted_data: The encrypted data.
         """
-        pass
+        encrypted_data = data
+        # todo: add functionality
+        return encrypted_data
 
     @staticmethod
     def encode_base64(data):
-        # todo: fix desc
         """
-        <COMMENT>
+        Encodes into base64.
 
-        :param type name: desc
-        :return type name: desc
+        :param dict data:
+        :return: encoded base64 string.
         """
-        # Encode data in base64
         to_string = json.dumps(data)
         to_bytes = str.encode(to_string)
         encoded = base64.b64encode(to_bytes)
@@ -189,25 +179,21 @@ class SensorManager:
 
     @staticmethod
     def decode_base64(data):
-        # todo: fix desc
         """
-        <COMMENT>
+        decodes from base64.
 
-        :param type name: desc
-        :return type name: desc
+        :param  string data:
+        :return: dict object.
         """
-        # Decode from base64
         to_bytes = base64.b64decode(data)
 
         return json.loads(to_bytes)
 
     def do_tasks(self):
-        # todo: fix desc
         """
-        <COMMENT>
+        Method that performs the given tasks for the sensors.
 
-        :param type name: desc
-        :return type name: desc
+        Saves the tasks results in self.data and self.log_data.
         """
         for index, task in enumerate(self.tasks):
             try:
@@ -230,9 +216,6 @@ class SensorManager:
                 elif 'svm30' in task.keys():
                     msg = 'NOT IMPLEMENTED: svm30 task'
                     self.log_data.append(msg)
-                elif 'send_data' in task.keys():
-                    # TODO: update SEND
-                    msg = 'data sent!'
                     self.log_data.append(msg)
                 elif 'aggregate' in task.keys():
                     self.data['sensor-data'] = self.aggregate()
@@ -253,7 +236,7 @@ class SensorManager:
 
     def get_device_name(self):
         """
-        <COMMENT>
+        Fetches the sensors device name.
 
         :param type name: desc
         :return type name: desc
@@ -275,32 +258,3 @@ class SensorManager:
         if serial_number.endswith('\x00'):
             serial_number = serial_number.replace('\x00', '')
         return serial_number
-
-
-# todo: fix script part to be able to use either customer format or admin format.
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-c',
-        dest='config_file',
-        type=argparse.FileType(mode='r'))
-    parser.add_argument(
-        '--config-file',
-        dest='config_file',
-        type=argparse.FileType(mode='r'))
-    args = parser.parse_args()
-    yaml_instructions = yaml.load(args.config_file, Loader=yaml.FullLoader)
-    try:
-        # with customer yaml
-        new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
-        # print(new_yaml)
-        print('-------------')
-        device = SensorManager(**new_yaml)
-        # with admin yaml
-        # device = SensorManagerMock(**yaml_instructions)
-        print(device.encoded_data)
-        print('-------------')
-        print(device.decode_base64(device.encoded_data))
-    except TypeError as e:
-        print(f'Error: {e}')
-    quit()
