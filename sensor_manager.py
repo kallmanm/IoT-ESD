@@ -8,7 +8,7 @@ import numpy as np
 import yaml
 import argparse
 import app_utils.utils as u
-from sps30_driver import sps30
+import sps30_driver.sps30 as sps30
 # TODO: Add encrypt function
 
 
