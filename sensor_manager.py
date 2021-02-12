@@ -5,7 +5,7 @@ import time
 import base64
 import json
 import numpy as np
-from .sps30 import Sps30
+from app.sps30 import Sps30
 # TODO: Add encrypt function
 
 
