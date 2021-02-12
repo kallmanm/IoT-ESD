@@ -125,9 +125,11 @@ class Sps30:
         :return bytearray data:
         """
         data_to_read = self.ser.inWaiting()
+
         while data_to_read < _stop_value:
             data_to_read = self.ser.inWaiting()
             time.sleep(0.1)
+
         data = self.ser.read(data_to_read)
 
         return data
@@ -152,15 +154,15 @@ class Sps30:
         return start, adr, cmd, state, length, rx_data, chk, stop
 
     def start_measurement(self, mode='float', start_up_time=30):
-        # todo: fix desc
         """
-        Activates Sensor start measurement command.
+        Activates sensor start measurement command.
 
         Datasheet 5.3.1 for reference.
+        Can only be activated from idle mode.
 
         :param string mode: 'float' or 'integer'.
         :param integer start_up_time: values between 8-30 are acceptable.
-        :return: sensor data.
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
         # mode = float cmd
@@ -169,38 +171,52 @@ class Sps30:
         if mode == 'integer':
             cmd = [0x7E, 0x00, 0x00, 0x02, 0x01, 0x05, 0xF7, 0x7E]
 
-        self.ser.write(cmd)
+        self.ser.write(cmd)  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         time.sleep(start_up_time)  # Minimum time needed to boot up the sensor. Range: 8 - 30 seconds.
 
         return data
 
     def stop_measurement(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.2
+        Activates sensor stop measurement command.
+
+        Datasheet 5.3.2 for reference.
+        Can only be activated from measurement mode.
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
-        self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])
+
+        self.ser.write([0x7E, 0x00, 0x01, 0x00, 0xFE, 0x7E])  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
     def read_measured_values(self, mode='float'):
-        # todo: fix desc
         """
-        Datasheet 5.3.3
-        """
+        Activates sensor read measured values command.
 
+        Datasheet 5.3.3 for reference. Data output is either in IEEE754 float values or
+        Unsigned 16-bit integer values. Returns a list with 10 different readouts. See
+        datasheet 4.3 for readout information.
+
+        Can only be activated from measurement mode.
+
+        :param string mode: 'float' or 'integer'.
+        :return list data: returns the sensor measurement readout in float or integer format.
+        """
         if mode == 'integer':
             stop_value = 27
         else:
@@ -231,76 +247,101 @@ class Sps30:
         return data
 
     def sleep(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.4
+        Activates sensor sleep command.
+
+        Datasheet 5.3.4 for reference.
+        Can only be activated from idle mode.
+
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
+
         self.ser.reset_input_buffer()
-        self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])
+        self.ser.write([0x7E, 0x00, 0x10, 0x00, 0xEF, 0x7E])  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
     def wake_up(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.5
+        Activates sensor wake up command.
+        Can only be activated from sleep mode.
+
+        Datasheet 5.3.5 for reference.
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
+
         self.ser.reset_input_buffer()
         self.ser.write([0xFF])
-        self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])
+        self.ser.write([0x7E, 0x00, 0x11, 0x00, 0xEE, 0x7E])  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
     def start_fan_cleaning(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.6
+        Activates sensor start fan cleaning command.
+
+        Datasheet 5.3.6 for reference.
+        Can only be activated from measurement mode.
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 7
+
         self.ser.reset_input_buffer()
-        self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])
+        self.ser.write([0x7E, 0x00, 0x56, 0x00, 0xA9, 0x7E])  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
     def read_write_auto_cleaning_interval(self):
         """
-        Datasheet 5.3.7
-        """
+        Activates sensor read/write auto cleaning interval command.
 
+        Datasheet 5.3.7 for reference.
+        Can only be activated from idle mode.
+
+        :return bytearray data: sensor data output.
+        """
         # self.ser.reset_input_buffer()
         # Read Auto Cleaning Interval:
         # self.ser.write([0x7E, 0x00, 0x80, 0x01, 0x00, 0x7D, 0x5E, 0x7E])
         # Write Auto Cleaning Interval to 0 (disable):
         # Disabled, use with caution.
         # self.ser.write([0x7E, 0x00, 0x80, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x7E])
+
         return 'NOT IMPLEMENTED'
 
     def device_information(self, return_info='product_type'):
-        # todo: fix desc
         """
-        Datasheet 5.3.8
-        response info:
-            Requested Device Information as null-terminated ASCII string.
-            The size of the string is limited to 32 ASCII characters (including null character).
-        """
+        Activates sensor device information command.
 
+        Datasheet 5.3.8 for reference.
+        Can only be activated from idle mode.
+
+        :param string return_info: 'product_type' or 'serial_number'.
+        :return string data: The requested device information.
+        """
         # default set to product_type
         cmd = 0x00
         check = 0x2E
@@ -312,10 +353,12 @@ class Sps30:
             stop_value = 28
 
         self.ser.reset_input_buffer()
-        self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])
+        self.ser.write([0x7E, 0x00, 0xD0, 0x01, cmd, check, 0x7E])  # MOSI
 
         raw_data = self.ser.read(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+
         # Segmenting the MISO Frame.
         start, adr, cmd, state, length, rx_data, chk, stop = self.segment_miso_frame(unstuffed_raw_data)
 
@@ -324,17 +367,23 @@ class Sps30:
         return data
 
     def read_version(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.9
-        """
+        Activates sensor read version command.
 
+        Datasheet 5.3.9 for reference.
+        Can only be activated from measurement mode.
+
+        :return bytearray data: sensor data output.
+        """
         stop_value = 14
+
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD1, 0x00, 0x2E, 0x7E])
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
+
         # Segmenting the MISO Frame.
         start, adr, cmd, state, length, rx_data, chk, stop = self.segment_miso_frame(unstuffed_raw_data)
 
@@ -346,18 +395,24 @@ class Sps30:
         return data
 
     def read_device_status_register(self):
-        # todo: fix desc
         """
-        Datasheet 5.3.10
+        Activates sensor read device status register command.
+
+        Datasheet 5.3.10 for reference.
+        Can only be activated from measurement mode.
+
+        :return bytearray data: sensor data output.
         """
         stop_value = 12
+
         self.ser.reset_input_buffer()
-        self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])
+        self.ser.write([0x7E, 0x00, 0xD2, 0x01, 0x00, 0x2C, 0x7E])  # MOSI
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
@@ -367,22 +422,22 @@ class Sps30:
         Datasheet 5.3.11
         """
         stop_value = 7
+
         self.ser.reset_input_buffer()
         self.ser.write([0x7E, 0x00, 0xD3, 0x00, 0x2C, 0x7E])
 
         raw_data = self.read_data(stop_value)  # MISO
+
         unstuffed_raw_data = self.undo_byte_stuffing(raw_data)  # Undo byte-stuffing in raw_data.
-        # Segmenting the MISO Frame.
-        data = self.segment_miso_frame(unstuffed_raw_data)
+
+        data = self.segment_miso_frame(unstuffed_raw_data)  # Segmenting the MISO Frame.
 
         return data
 
     def open_port(self):
-        # todo: fix desc
         """
-        Opens a port connection.
+        Opens a port connection to the sensor.
         """
-
         self.ser = serial.Serial(self.port,
                                  baudrate=115200,
                                  bytesize=serial.EIGHTBITS,
@@ -391,9 +446,7 @@ class Sps30:
                                  timeout=2)  # Set at 2 seconds
 
     def close_port(self):
-        # todo: fix desc
         """
-        Closes the port connection immediately.
+        Closes the port connection to the sensor.
         """
-
         self.ser.close()
