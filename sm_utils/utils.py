@@ -51,7 +51,8 @@ def create_sensor_manager_yaml(params, save=False):
 
     new_data = {
         'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0'}},
-        'tasks': make_task(cty)
+        'tasks': make_task(cty),
+        'pub_key': cty.pub_key
     }
     if save:
         with open(r'complex.yaml', 'w') as file:

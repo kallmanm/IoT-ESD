@@ -51,4 +51,5 @@ tasks:
       task: open_port
   - sps30:
       task: close_port
+pub_key: the public key to encrypt with (optional)
 ...
