@@ -5,6 +5,16 @@ import yaml
 import json
 import base64
 
+import cryptography
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+
+from cryptography.fernet import Fernet
+
 
 class CustomerTaskYaml:
     """
@@ -104,3 +114,106 @@ def decode_base64(data):
     to_bytes = base64.b64decode(data)
 
     return json.loads(to_bytes)
+
+#####################################
+#   ENCRYPTION/DECRYPTION SECTION   #
+#####################################
+
+
+class Encryptor:
+    """
+    Encryptor Class desc.
+    """
+
+    def __init__(self, data_to_encrypt, asym_pub_key):
+        """
+        Constructor.
+        """
+        self.data_to_encrypt = data_to_encrypt
+        self.asym_pub_key = asym_pub_key
+
+        self.sym_key = self.generate_sym_key()
+        self.fernet = Fernet(self.sym_key)
+
+        # data to send customer, encrypted with self.sym_key
+        self.encrypted_data = self.symmetrical_encryption()
+        # key to send customer, encrypted with self.asym_pub_key
+        self.encrypted_sym_key = self.asymmetrical_encryption()
+
+        self.print_results()
+
+    def generate_sym_key(self):
+        """
+        Generates a symmetrical key and returns it.
+        """
+        _sym_key = Fernet.generate_key()
+        return _sym_key
+
+    def symmetrical_encryption(self):
+        """
+        Desc
+        """
+        sym_encrypted_data = self.fernet.encrypt(self.data_to_encrypt)
+
+        return sym_encrypted_data
+
+    def asymmetrical_encryption(self):
+        """
+        Desc
+        """
+        # public_key = serialization.load_pem_public_key(self.asym_pub_key, backend=default_backend())
+
+        encrypted_key = self.asym_pub_key.encrypt(
+            self.sym_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            ))
+
+        return encrypted_key
+
+    def print_results(self):
+        print(f'the encrypted key: {self.encrypted_sym_key}')
+        print(f'the encrypted data: {self.encrypted_data}')
+
+
+class Decryptor:
+    """
+    Decryptor Class desc.
+    """
+
+    def __init__(self, data_to_decrypt, encrypted_sym_key, asym_private_key):
+        """
+        Constructor.
+        """
+        self.data_to_decrypt = data_to_decrypt
+        self.encrypted_sym_key = encrypted_sym_key
+        self.asym_private_key = asym_private_key
+
+        self.decrypted_sym_key = self.asymmetrical_decryption()
+        self.fernet = Fernet(self.decrypted_sym_key)
+        self.decrypted_data = self.symmetrical_decryption()
+
+        self.print_results()
+
+    def asymmetrical_decryption(self):
+        decrypted_data = self.asym_private_key.decrypt(
+            self.encrypted_sym_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            ))
+
+        return decrypted_data
+
+    def symmetrical_decryption(self):
+        """
+        Decrypts an encrypted message
+        """
+        return self.fernet.decrypt(self.data_to_decrypt)
+
+    def print_results(self):
+        print(f'the decrypted key: {self.decrypted_sym_key}')
+        print(f'the decrypted data: {self.decrypted_data}')
