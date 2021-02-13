@@ -4,7 +4,7 @@ Utility functions.
 import yaml
 import json
 import base64
-
+import time
 import cryptography
 
 from cryptography.hazmat.backends import default_backend
@@ -28,13 +28,15 @@ class CustomerTaskYaml:
         """
         self.params = params
         self.sensor = params.get('sensor')
+        self.mode = params.get('mode')
         self.type = params.get('type')
         self.samples = params.get('samples')
         self.rate = params.get('rate')
         self.amount = params.get('amount')
-        self.mode = params.get('mode')
         self.aggregate = params.get('aggregate')
         self.encrypt = params.get('encrypt')
+        if self.encrypt:
+            self.pub_key = params.get('pub_key')
 
 
 def create_sensor_manager_yaml(params, save=False):
@@ -95,7 +97,6 @@ def encode_base64(data):
     :param dict data:
     :return: encoded base64 string.
     """
-    # Encode data in base64
     to_string = json.dumps(data)
     to_bytes = str.encode(to_string)
     encoded = base64.b64encode(to_bytes)
@@ -110,10 +111,20 @@ def decode_base64(data):
     :param  string data:
     :return: dict object.
     """
-    # Decode from base64
     to_bytes = base64.b64decode(data)
 
     return json.loads(to_bytes)
+
+
+def return_timestamp():
+    """
+    Gets and returns the current local time.
+
+    :return string timestamp: Current local time in format %Y-%m-%d %H:%M:%S %Z.
+    """
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+
+    return timestamp
 
 #####################################
 #   ENCRYPTION/DECRYPTION SECTION   #

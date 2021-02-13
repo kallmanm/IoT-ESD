@@ -27,13 +27,7 @@ import base64
 import json
 import numpy as np
 import sensors.sps30 as sps30
-import cryptography
-
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import padding
+from sm_utils.utils import Encryptor, encode_base64_key_and_data, encode_base64, return_timestamp
 
 
 class SensorManager:
@@ -45,7 +39,7 @@ class SensorManager:
     sensors. After that all key attributes are instantiated and finally the do_tasks() method is run
     that performs the sensor operations.
     """
-    def __init__(self, sensors, tasks):
+    def __init__(self, sensors, tasks, pub_key=None):
         """
         Constructor for SensorManager Class.
 
@@ -63,24 +57,16 @@ class SensorManager:
         self.measurement_samples = 0
         self.measurement_rate = 0
         self.measurement_amount = 0
+        # todo: make sure pub_key is read in correctly
+        self.pub_key = pub_key
+        self.encrypted_data = ''
         self.encoded_data = ''
         self.data['device-name'] = self.get_device_name()
         self.data['serial-number'] = self.get_serial_number()
         # todo: add location to data.
-        self.data['start-time'] = self.return_timestamp()
+        self.data['start-time'] = return_timestamp()
         self.data['stop-time'] = ''
         self.do_tasks()
-
-    @staticmethod
-    def return_timestamp():
-        """
-        Gets and returns the current local time.
-
-        :return string timestamp: Current local time in format %Y-%m-%d %H:%M:%S %Z.
-        """
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-
-        return timestamp
 
     def sps30_task(self,
                    task,
@@ -112,7 +98,7 @@ class SensorManager:
 
             for amount in range(measurement_amount):
                 for sample in range(measurement_samples):
-                    sensor_data[self.return_timestamp()] = self.sps30.read_measured_values(**method_parameters)
+                    sensor_data[return_timestamp()] = self.sps30.read_measured_values(**method_parameters)
                     time.sleep(1)  # SPS30 needs 1 second between measurements.
                 if amount < measurement_amount - 1:
                     # TODO: change time.sleep to 60 when done with dev
@@ -185,8 +171,7 @@ class SensorManager:
 
         return aggregated_dict
 
-    @staticmethod
-    def encrypt(data, public_key):
+    def encrypt(self):
         """
         Method that encrypts data.
 
@@ -208,7 +193,7 @@ class SensorManager:
         #  ASYMMETRIC EXAMPLE
         #  https://towardsdatascience.com/asymmetric-encrypting-of-sensitive-data-in-memory-python-e20fdebc521c
 
-        encrypted_data = data
+        encrypted_data = self.data
         # todo: 1. Data MUST be converted to bytes before fed into ENCRYPTOR CLASS
         # todo: 2. Use Ecryptor class to make encrypted data
         # todo: 3. Use encode_base64_key_and_data()
@@ -229,33 +214,6 @@ class SensorManager:
 
         return decrypted_data
 
-    @staticmethod
-    def encode_base64(data):
-        """
-        Encodes into base64.
-
-        :param dict data:
-        :return: encoded base64 string.
-        """
-        to_string = json.dumps(data)
-        to_bytes = str.encode(to_string)
-        encoded = base64.b64encode(to_bytes)
-
-        return encoded.decode()
-
-    @staticmethod
-    def decode_base64(data):
-        """
-        decodes from base64.
-
-        :param  string data:
-        :return json_obj: dict object.
-        """
-        to_bytes = base64.b64decode(data)
-        json_obj = json.loads(to_bytes)
-
-        return json_obj
-
     def do_tasks(self):
         """
         Method that performs the given tasks for the sensors.
@@ -275,7 +233,7 @@ class SensorManager:
                     elif task['sps30']['task'] == 'stop_measurement':
                         sensor_data = self.sps30_task(**task['sps30'])
                         self.log_data.append(sensor_data)
-                        self.data['stop-time'] = self.return_timestamp()
+                        self.data['stop-time'] = return_timestamp()
                     else:
                         result = self.sps30_task(**task['sps30'])
                         self.log_data.append(result)
@@ -285,17 +243,25 @@ class SensorManager:
                 elif 'svm30' in task.keys():
                     msg = 'NOT IMPLEMENTED: svm30 task'
                     self.log_data.append(msg)
-                    self.log_data.append(msg)
+                # TODO: CHECK THAT AGGREGATE; ENCRYPT AND ENCODE WORK WITH NEW SETUP
                 elif 'aggregate' in task.keys():
-                    self.data['sensor-data'] = self.aggregate()
-                    self.log_data.append('data aggregated')
+                    if task['aggregate']:
+                        self.data['sensor-data'] = self.aggregate()
+                        self.log_data.append('data aggregated')
                 elif 'encrypt' in task.keys():
-                    # todo: update ENCRYPT
-                    msg = 'data encrypted'
-                    self.log_data.append(msg)
+                    if task['encrypt']:
+                        self.encrypted_data = self.encrypt()
+                        msg = 'data encrypted'
+                        self.log_data.append(msg)
                 elif 'encode' in task.keys():
-                    encoded_data = self.encode_base64(self.data)
-                    self.encoded_data += encoded_data
+                    if task['encode']:
+                        if task['encrypt']:
+                            encoded_data = encode_base64_key_and_data(self.pub_key, self.data)
+                            self.encoded_data += encoded_data
+                            pass
+                        else:
+                            encoded_data = encode_base64(self.data)
+                            self.encoded_data += encoded_data
                 else:
                     msg = f'Unsupported task attempted: {task}'
                     self.log_data.append(msg)

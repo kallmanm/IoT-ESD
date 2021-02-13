@@ -2,18 +2,19 @@
 params:
   # Name of sensor to use
   sensor: sps30
+  # The chosen return data format from the sensor, float or integer
+  mode: float
   # What type of data, options are: all
   type: all
   # Number of measurements samples
   samples: 2
-  # Rate of sampling (in minutes)---> min: 3 min, max: 30 min
+  # Rate of sampling (in minutes)---> min: 1 min, max: 15 min
   rate: 1
-
   # The total amount of measurements done
   amount: 3
-  # The chosen return data format, float or integer
-  mode: float
-  # Aggregate samples (true) or return all data (false)
+  # Aggregate samples (true) or return all samples (false)
   aggregate: True
   # Encrypt data
   encrypt: False
+  # public key to encrypt with. parameter only needed if encrypt is True.
+  pub_key: pub key comes here
