@@ -18,5 +18,6 @@ tasks:
       task: device_reset
   - sps30:
       task: close_port
+  - encrypt: True
 pub_key: the public key to encrypt with (optional)
 ...
