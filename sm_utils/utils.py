@@ -140,8 +140,6 @@ class Encryptor:
         # key to send customer, encrypted with self.asym_pub_key
         self.encrypted_sym_key = self.asymmetrical_encryption()
 
-        self.print_results()
-
     def generate_sym_key(self):
         """
         Generates a symmetrical key and returns it.
@@ -173,9 +171,11 @@ class Encryptor:
 
         return encrypted_key
 
-    def print_results(self):
-        print(f'the encrypted key: {self.encrypted_sym_key}')
-        print(f'the encrypted data: {self.encrypted_data}')
+    def return_key_and_data(self):
+        key = self.encrypted_sym_key
+        data = self.encrypted_data
+
+        return key, data
 
 
 class Decryptor:
@@ -195,8 +195,6 @@ class Decryptor:
         self.fernet = Fernet(self.decrypted_sym_key)
         self.decrypted_data = self.symmetrical_decryption()
 
-        self.print_results()
-
     def asymmetrical_decryption(self):
         decrypted_data = self.asym_private_key.decrypt(
             self.encrypted_sym_key,
@@ -214,6 +212,40 @@ class Decryptor:
         """
         return self.fernet.decrypt(self.data_to_decrypt)
 
-    def print_results(self):
-        print(f'the decrypted key: {self.decrypted_sym_key}')
-        print(f'the decrypted data: {self.decrypted_data}')
+    def return_key_and_data(self):
+        key = self.decrypted_sym_key
+        data = self.decrypted_data
+
+        return key, data
+
+
+def encode_base64_key_and_data(key, data):
+    """
+    Desc
+    """
+    # CONVERT key AND data FROM BYTES -> STRING
+    key_bytes_to_string = key.decode('latin1')
+    data_bytes_to_string = data.decode()
+
+    # CREATE DICT OBJECT
+    data_to_dict = {
+        'key': key_bytes_to_string,
+        'data': data_bytes_to_string
+    }
+
+    # ENCODE data_to_dict INTO BASE64
+    encoded_data = encode_base64(data_to_dict)
+
+    return encoded_data
+
+
+def decode_base64_key_and_data(base64_string):
+    """
+    Desc
+    """
+    data = decode_base64(base64_string)
+
+    key_to_bytes = data['key'].encode('latin1')
+    data_to_bytes = data['data'].encode()
+
+    return key_to_bytes, data_to_bytes

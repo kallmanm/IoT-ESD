@@ -209,7 +209,9 @@ class SensorManager:
         #  https://towardsdatascience.com/asymmetric-encrypting-of-sensitive-data-in-memory-python-e20fdebc521c
 
         encrypted_data = data
-        # todo: add ENCRYPTION function
+        # todo: 1. Data MUST be converted to bytes before fed into ENCRYPTOR CLASS
+        # todo: 2. Use Ecryptor class to make encrypted data
+        # todo: 3. Use encode_base64_key_and_data()
 
         return encrypted_data
 
