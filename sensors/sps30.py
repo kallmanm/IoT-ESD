@@ -232,13 +232,13 @@ class Sps30:
                 data = struct.unpack(">HHHHHHHHHH", rx_data)  # format = big-endian 10 integers
 
             except struct.error as e:
-                data = [f'Error in unpacking rx_data', rx_data, e]
+                data = ['Error in unpacking rx_data', rx_data, e]
         else:
             try:
                 unpacked_data = struct.unpack(">ffffffffff", rx_data)  # format = big-endian 10 floats
                 data = [round(num, 2) for num in unpacked_data]
             except struct.error as e:
-                data = [f'Error in unpacking rx_data', rx_data, e]
+                data = ['Error in unpacking rx_data', rx_data, e]
 
         return data
 

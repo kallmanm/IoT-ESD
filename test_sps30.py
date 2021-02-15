@@ -6,13 +6,13 @@ import time
 
 device_port = "/dev/ttyUSB0"
 COUNT = 20
-print(f'Device port set to: {device_port}\n')
+print(f'Device port set to: {device_port}')
 
 print(f'******************')
 
 sensor_sps30 = sps30.Sps30(device_port)
 
-print(f'Sps30 __init__(): {sensor_sps30.ser.is_open}\n')
+print(f'Sps30 __init__(): {sensor_sps30.ser.is_open}')
 
 print(f'----------')
 print('Device information - product type:')
