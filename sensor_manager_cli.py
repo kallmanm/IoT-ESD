@@ -15,7 +15,7 @@ if __name__ == "__main__":
         dest='config_file',
         type=argparse.FileType(mode='r'))
     args = parser.parse_args()
-    yaml_instructions = yaml.load(args.config_file, Loader=yaml.FullLoader)
+    yaml_instructions = yaml.full_load(args.config_file)
     try:
         # with customer yaml
         new_yaml = u.create_sensor_manager_yaml(**yaml_instructions)
