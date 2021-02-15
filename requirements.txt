@@ -7,7 +7,7 @@ iso8601==0.1.13
 numpy==1.20.0
 pycparser==2.20
 pyserial==3.4
-PyYAML==5.3.1
+PyYAML==5.4.1
 self==0.0.0
 serial==0.0.97
 appdirs==1.4.4
