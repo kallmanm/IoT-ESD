@@ -5,7 +5,6 @@ import yaml
 import json
 import base64
 import time
-import cryptography
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -20,6 +19,7 @@ class CustomerTaskYaml:
     """
     Maps customer yaml to CustomerTaskYaml object.
     """
+
     def __init__(self, params):
         """
         Constructor for CustomerTaskYaml.
@@ -50,7 +50,7 @@ def create_sensor_manager_yaml(params, save=False):
     cty: CustomerTaskYaml = CustomerTaskYaml(params)
 
     new_data = {
-        'sensors': {f'{cty.sensor}': {'port': '/dev/ttyUSB0'}},
+        'sensors': {{cty.sensor}: {'port': '/dev/ttyUSB0'}},
         'tasks': make_task(cty),
         'pub_key': cty.pub_key
     }
@@ -67,26 +67,26 @@ def make_task(obj):
     :param obj: CustomerTaskYaml object as input.
     :return tasks: Returns tasks in correct format for sensor_manager.
     """
-    tasks = [{f'{obj.sensor}': {'task': 'start_measurement',
-                                'method_parameters': {'mode': f'{obj.mode}', 'start_up_time': 8}}},
-             {f'{obj.sensor}': {'task': 'read_measured_values',
-                                'measurement_samples': int(obj.samples),
-                                'measurement_rate': int(obj.rate),
-                                'measurement_amount': int(obj.amount),
-                                'method_parameters': {'mode': f'{obj.mode}'}}},
-             {f'{obj.sensor}': {'task': 'stop_measurement'}}]
+    tasks = [{{obj.sensor}: {'task': 'start_measurement',
+                             'method_parameters': {'mode': {obj.mode}, 'start_up_time': 8}}},
+             {{obj.sensor}: {'task': 'read_measured_values',
+                             'measurement_samples': int(obj.samples),
+                             'measurement_rate': int(obj.rate),
+                             'measurement_amount': int(obj.amount),
+                             'method_parameters': {'mode': {obj.mode}}}},
+             {{obj.sensor}: {'task': 'stop_measurement'}}]
     # todo: REMOVE IF STATEMENT IF NO OTHER TYPES THAN ALL ARE IMPLEMENTED
     if obj.type == 'all':
         # split data and return only what is requested
         pass
     if obj.aggregate:
-        tasks.append({f'aggregate': obj.aggregate})
+        tasks.append({'aggregate': obj.aggregate})
     if obj.encrypt:
-        tasks.append({f'encrypt': obj.encrypt})
+        tasks.append({'encrypt': obj.encrypt})
     # encode base64
-    tasks.append({f'encode': True})
+    tasks.append({'encode': True})
     # close_port
-    tasks.append({f'{obj.sensor}': {'task': 'close_port'}})
+    tasks.append({'{obj.sensor}': {'task': 'close_port'}})
 
     return tasks
 
@@ -126,6 +126,7 @@ def return_timestamp():
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S %Z')
 
     return timestamp
+
 
 #####################################
 #   ENCRYPTION/DECRYPTION SECTION   #

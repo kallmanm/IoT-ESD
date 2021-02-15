@@ -140,7 +140,7 @@ class SensorManager:
             return self.sps30.close_port()
 
         else:
-            sensor_data = f'invalid task: {task}'
+            sensor_data = {'invalid task': task}
             return sensor_data
 
     def aggregate(self):
@@ -249,10 +249,10 @@ class SensorManager:
                             encoded_data = encode_base64(self.data)
                             self.encoded_data = encoded_data
                 else:
-                    msg = f'Unsupported task attempted: {task}'
+                    msg = {'Unsupported task attempted': task}
                     self.log_data.append(msg)
             except AttributeError as e:
-                msg = f'Error in task:{task} - ErrorMessage:{e}'
+                msg = {'Error': e}
                 self.log_data.append(msg)
 
     def get_device_name(self):
