@@ -229,18 +229,18 @@ class SensorManager:
                     self.log_data.append(msg)
                 # TODO: CHECK THAT AGGREGATE; ENCRYPT AND ENCODE WORK WITH NEW SETUP
                 elif 'aggregate' in task.keys():
-                    print(f"task['aggregate']:{task['aggregate']}")
+                    print({"task['aggregate']": task['aggregate']})
                     if task['aggregate']:
                         self.data['sensor-data'] = self.aggregate()
                         self.log_data.append('data aggregated')
                 elif 'encrypt' in task.keys():
-                    print(f"task['encrypt']:{task['encrypt']}")
+                    print({"task['encrypt']": task['encrypt']})
                     if task['encrypt']:
                         self.encrypted_data = self.encrypt()
                         msg = 'data encrypted'
                         self.log_data.append(msg)
                 elif 'encode' in task.keys():
-                    print(f"task['encode']:{task['encode']}")
+                    print({"task['encode']": task['encode']})
                     if task['encode']:
                         if task['encrypt']:
                             encoded_data = encode_base64_key_and_data(self.pub_key, self.data)
