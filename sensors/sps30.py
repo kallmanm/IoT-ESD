@@ -1,3 +1,4 @@
+# coding: utf-8
 # todo: fix licence
 # TODO: http://python.org/dev/peps/pep-0263/
 """
@@ -9,7 +10,7 @@
     search: sps30, download: Datasheet Particulate Matter Sensors SPS30
 
     Datasheet Version '1.0 – D1 – March 2020' used in the development of this library.
-
+    Downloaded on 8.1.2021.
     by
     Mattias Kallman
     Github: @kallmanm

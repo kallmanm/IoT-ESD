@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Test script for Sps30 class testing that all class functionality is working.
 """

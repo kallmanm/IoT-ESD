@@ -1,3 +1,4 @@
+# coding: utf-8
 # todo: fix licence
 """
     A Python interface implementing the sps30 sensor library.
