@@ -6,7 +6,7 @@ from sensors import sps30
 import time
 
 device_port = "/dev/ttyUSB0"
-COUNT = 20
+COUNT = 10
 print('Device port set to:')
 print(device_port)
 print('******************')
@@ -111,7 +111,7 @@ sensor_sps30.stop_measurement()
 
 print('******************')
 rd = sensor_sps30.read_version()
-print('read_version -' + rd)
+print('read_version -' + str(rd))
 dr = sensor_sps30.device_reset()
 print('device_reset - {dr}')
 
