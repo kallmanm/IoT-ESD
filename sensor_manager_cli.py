@@ -26,7 +26,10 @@ if __name__ == "__main__":
         # device = SensorManagerMock(**yaml_instructions)
         print(device.encoded_data)
         print('-------------')
-        print(device.decode_base64(device.encoded_data))
+        print(device.encrypted_data)
+        print('-------------')
+        print(device.data)
+        #print(device.decode_base64(device.encoded_data))
     except TypeError as e:
-        print(f'Error: {e}')
+        print(e)
     quit()

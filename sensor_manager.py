@@ -244,11 +244,10 @@ class SensorManager:
                     if task['encode']:
                         if task['encrypt']:
                             encoded_data = encode_base64_key_and_data(self.pub_key, self.data)
-                            self.encoded_data += encoded_data
-                            pass
+                            self.encoded_data = encoded_data
                         else:
                             encoded_data = encode_base64(self.data)
-                            self.encoded_data += encoded_data
+                            self.encoded_data = encoded_data
                 else:
                     msg = f'Unsupported task attempted: {task}'
                     self.log_data.append(msg)
