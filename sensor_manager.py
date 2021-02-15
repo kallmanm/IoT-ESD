@@ -63,7 +63,6 @@ class SensorManager:
         self.encoded_data = ''
         self.data['device-name'] = self.get_device_name()
         self.data['serial-number'] = self.get_serial_number()
-        # todo: add location to data.
         self.data['start-time'] = return_timestamp()
         self.data['stop-time'] = ''
         self.do_tasks()
@@ -74,7 +73,6 @@ class SensorManager:
                    measurement_rate=1,
                    measurement_amount=1,
                    method_parameters=None):
-        # todo: ask john about naming convention for sample, rate and amount...
         """
         Performs the requested sps30 command.
 
@@ -200,20 +198,6 @@ class SensorManager:
 
         return encrypted_data
 
-    @staticmethod
-    def decrypt(data, private_key):
-        """
-        Method that decrypts data.
-
-        :param data: The encrypted data.
-        :param private_key: The private key used to decrypt the data.
-        :return decrypted_data: Data that has been decrypted.
-        """
-        # PRIVATE TO DECRYPT
-        decrypted_data = data
-
-        return decrypted_data
-
     def do_tasks(self):
         """
         Method that performs the given tasks for the sensors.
@@ -245,15 +229,18 @@ class SensorManager:
                     self.log_data.append(msg)
                 # TODO: CHECK THAT AGGREGATE; ENCRYPT AND ENCODE WORK WITH NEW SETUP
                 elif 'aggregate' in task.keys():
+                    print(f"task['aggregate']:{task['aggregate']}")
                     if task['aggregate']:
                         self.data['sensor-data'] = self.aggregate()
                         self.log_data.append('data aggregated')
                 elif 'encrypt' in task.keys():
+                    print(f"task['encrypt']:{task['encrypt']}")
                     if task['encrypt']:
                         self.encrypted_data = self.encrypt()
                         msg = 'data encrypted'
                         self.log_data.append(msg)
                 elif 'encode' in task.keys():
+                    print(f"task['encode']:{task['encode']}")
                     if task['encode']:
                         if task['encrypt']:
                             encoded_data = encode_base64_key_and_data(self.pub_key, self.data)
