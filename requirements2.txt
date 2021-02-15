@@ -5,6 +5,7 @@ attrs==20.2.0
 backcall==0.2.0
 bleach==3.1.5
 cffi==1.14.2
+cryptography==3.4.5
 decorator==4.4.2
 defusedxml==0.6.0
 distlib==0.3.1
