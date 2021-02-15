@@ -47,7 +47,7 @@ def create_sensor_manager_yaml(params, save=False):
     :param save: True if save to yaml file
     :return new_data: sensor_manager data structure.
     """
-    cty: CustomerTaskYaml = CustomerTaskYaml(params)
+    cty = CustomerTaskYaml(params)
 
     new_data = {
         'sensors': {{cty.sensor}: {'port': '/dev/ttyUSB0'}},
